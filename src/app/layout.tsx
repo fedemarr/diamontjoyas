@@ -12,6 +12,18 @@ export const metadata: Metadata = {
   },
   description: siteConfig.description,
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+  openGraph: {
+    type: "website",
+    siteName: siteConfig.name,
+    title: `${siteConfig.name} — Joyería de alta gama`,
+    description: siteConfig.description,
+    locale: "es_AR",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${siteConfig.name} — Joyería de alta gama`,
+    description: siteConfig.description,
+  },
 };
 
 /**

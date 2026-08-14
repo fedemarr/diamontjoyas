@@ -42,6 +42,13 @@ export async function PATCH(
       include: { items: true },
     });
 
+    // Confirmación manual (transferencia/efectivo): cuando el admin marca
+    // APPROVED, se descuenta stock acá — es el equivalente al webhook de MP.
+    const approvingNow =
+      data.paymentStatus === "APPROVED" &&
+      before.paymentStatus !== "APPROVED" &&
+      before.paymentMethod !== "MERCADO_PAGO";
+
     const order = await db.$transaction(async (tx) => {
       const updated = await tx.order.update({
         where: { id },
@@ -54,12 +61,6 @@ export async function PATCH(
         include: { items: true },
       });
 
-      // Confirmación manual (transferencia/efectivo): cuando el admin marca
-      // APPROVED, se descuenta stock acá — es el equivalente al webhook de MP.
-      const approvingNow =
-        data.paymentStatus === "APPROVED" &&
-        before.paymentStatus !== "APPROVED" &&
-        before.paymentMethod !== "MERCADO_PAGO";
       if (approvingNow) {
         await tx.order.update({
           where: { id },
@@ -90,6 +91,15 @@ export async function PATCH(
         },
       },
     });
+
+    if (approvingNow) {
+      await emitEvent("order.payment_approved", {
+        orderId: order.id,
+        orderNumber: order.orderNumber,
+        publicCode: order.publicCode,
+        customerEmail: order.customerEmail,
+      });
+    }
 
     if (
       data.orderStatus === "ENVIADO" &&

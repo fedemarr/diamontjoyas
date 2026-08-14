@@ -1,4 +1,5 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { sanitizeText } from "@/lib/sanitize";
 
 export function ProductInfoAccordion({
   description,
@@ -12,7 +13,7 @@ export function ProductInfoAccordion({
       <AccordionItem value="descripcion">
         <AccordionTrigger>Descripción</AccordionTrigger>
         <AccordionContent>
-          {description || "Sin descripción todavía."}
+          {description ? sanitizeText(description) : "Sin descripción todavía."}
         </AccordionContent>
       </AccordionItem>
 

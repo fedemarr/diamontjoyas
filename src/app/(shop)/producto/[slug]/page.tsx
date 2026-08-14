@@ -9,6 +9,7 @@ import { formatARS } from "@/lib/format";
 import { MATERIAL_LABELS } from "@/lib/materials";
 import { getProductBySlug, getRelatedProducts, incrementProductViews } from "@/lib/queries/products";
 import { buildWhatsappUrl, getPublicSettings } from "@/lib/queries/settings";
+import { safeJsonLd } from "@/lib/sanitize";
 
 export async function generateMetadata({
   params,
@@ -87,7 +88,7 @@ export default async function ProductoPage({
       {/* JSON-LD estático, no viene de input de usuario */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
 
       <nav className="mb-6 text-sm text-silver">
