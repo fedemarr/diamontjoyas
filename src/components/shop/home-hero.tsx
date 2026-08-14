@@ -1,7 +1,6 @@
 "use client";
 
 import type { Banner } from "@prisma/client";
-import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -37,11 +36,9 @@ export function HomeHero({
           aria-hidden
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(201,162,39,0.08),transparent_60%)]"
         />
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="relative flex max-w-2xl flex-col items-center gap-6"
+        <div
+          className="animate-in fade-in duration-700 relative flex max-w-2xl flex-col items-center gap-6"
+          aria-label={heroTitle ?? "Bienvenida"}
         >
           <span className="text-xs font-semibold tracking-luxury text-gold-light uppercase">
             Joyería de alta gama · San Miguel, Buenos Aires
@@ -65,7 +62,7 @@ export function HomeHero({
               <Link href="/contacto">Consultanos</Link>
             </Button>
           </div>
-        </motion.div>
+        </div>
       </section>
     );
   }
@@ -74,37 +71,28 @@ export function HomeHero({
 
   return (
     <section className="relative h-[70vh] min-h-[420px] w-full overflow-hidden">
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={current.id}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.6 }}
-          className="absolute inset-0"
-        >
-          <Image
-            src={current.imageUrl}
-            alt={current.title}
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-ink/10" />
-          <div className="absolute inset-0 flex flex-col items-center justify-end gap-4 px-4 pb-16 text-center">
-            <h1 className="font-display text-3xl font-semibold text-bone sm:text-5xl">
-              {current.title}
-            </h1>
-            {current.subtitle && (
-              <p className="max-w-md text-sm text-silver sm:text-base">{current.subtitle}</p>
-            )}
-            <Button asChild size="lg" className="bg-gradient-gold text-ink hover:opacity-90">
-              <Link href={current.linkUrl ?? "/tienda"}>Ver más</Link>
-            </Button>
-          </div>
-        </motion.div>
-      </AnimatePresence>
+      <div key={current.id} className="animate-in fade-in duration-500 absolute inset-0">
+        <Image
+          src={current.imageUrl}
+          alt={current.title}
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-ink/10" />
+        <div className="absolute inset-0 flex flex-col items-center justify-end gap-4 px-4 pb-16 text-center">
+          <h1 className="font-display text-3xl font-semibold text-bone sm:text-5xl">
+            {current.title}
+          </h1>
+          {current.subtitle && (
+            <p className="max-w-md text-sm text-silver sm:text-base">{current.subtitle}</p>
+          )}
+          <Button asChild size="lg" className="bg-gradient-gold text-ink hover:opacity-90">
+            <Link href={current.linkUrl ?? "/tienda"}>Ver más</Link>
+          </Button>
+        </div>
+      </div>
 
       {banners.length > 1 && (
         <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-1.5">

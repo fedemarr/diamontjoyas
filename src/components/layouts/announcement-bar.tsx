@@ -1,6 +1,5 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -25,30 +24,24 @@ export function AnnouncementBar({ announcements }: { announcements: HeaderAnnoun
 
   const current = announcements[index];
   const content = (
-    <motion.p
+    <p
       key={current.id}
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -6 }}
-      transition={{ duration: 0.35 }}
-      className="text-xs font-medium tracking-luxury text-silver uppercase"
+      className="animate-in fade-in slide-in-from-top-1 text-xs font-medium tracking-luxury text-silver uppercase duration-500"
     >
       {current.text}
-    </motion.p>
+    </p>
   );
 
   return (
     <div className="bg-ink-soft border-b border-ink-border text-bone">
       <div className="mx-auto flex h-9 max-w-7xl items-center justify-center overflow-hidden px-4 text-center">
-        <AnimatePresence mode="wait">
-          {current.linkUrl ? (
-            <Link href={current.linkUrl} className="hover:text-gold">
-              {content}
-            </Link>
-          ) : (
-            content
-          )}
-        </AnimatePresence>
+        {current.linkUrl ? (
+          <Link href={current.linkUrl} className="hover:text-gold">
+            {content}
+          </Link>
+        ) : (
+          content
+        )}
       </div>
     </div>
   );
