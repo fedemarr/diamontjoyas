@@ -1,26 +1,158 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+ * DIAMONDVA.Co — identidad "Dark Luxury Jewelry".
+ * El sitio NO tiene modo claro/oscuro alternable: es oscuro y premium
+ * siempre, por identidad de marca (ver sección 2 del prompt maestro).
+ * Los tokens semánticos de shadcn/ui (background, primary, border, etc.)
+ * se mapean una sola vez acá contra la paleta de marca.
+ */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* semánticos shadcn/ui → paleta de marca */
+  --color-background: var(--ink);
+  --color-foreground: var(--bone);
+  --color-card: var(--ink-soft);
+  --color-card-foreground: var(--bone);
+  --color-popover: var(--ink-soft);
+  --color-popover-foreground: var(--bone);
+  --color-primary: var(--gold);
+  --color-primary-foreground: var(--ink);
+  --color-secondary: var(--ink-soft);
+  --color-secondary-foreground: var(--bone);
+  --color-muted: var(--ink-soft);
+  --color-muted-foreground: var(--silver);
+  --color-accent: var(--ink-border);
+  --color-accent-foreground: var(--gold-light);
+  --color-destructive: var(--danger);
+  --color-border: var(--ink-border);
+  --color-input: var(--ink-border);
+  --color-ring: var(--gold);
+
+  --color-sidebar: var(--ink-soft);
+  --color-sidebar-foreground: var(--bone);
+  --color-sidebar-primary: var(--gold);
+  --color-sidebar-primary-foreground: var(--ink);
+  --color-sidebar-accent: var(--ink-border);
+  --color-sidebar-accent-foreground: var(--bone);
+  --color-sidebar-border: var(--ink-border);
+  --color-sidebar-ring: var(--gold);
+
+  /* paleta de marca expuesta como utilidades (bg-gold, text-silver, etc.) */
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-border: var(--ink-border);
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-gold-deep: var(--gold-deep);
+  --color-silver: var(--silver);
+  --color-bone: var(--bone);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-cormorant);
+
+  --tracking-luxury: 0.08em;
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  /* paleta base — ver sección 2 del prompt maestro */
+  --ink: #0b0b0c; /* fondo principal — negro suave, no #000 puro */
+  --ink-soft: #141416; /* superficies / cards */
+  --ink-border: #232326; /* bordes sutiles */
+  --gold: #c9a227; /* dorado base — CTA principal */
+  --gold-light: #e8c87a; /* highlight de gradiente */
+  --gold-deep: #8c6d1f; /* sombra de gradiente */
+  --silver: #c8ccd0; /* texto secundario / detalles */
+  --bone: #f5f3ef; /* texto principal — blanco cálido, no #fff puro */
+  --success: #3fa66a;
+  --danger: #d9534f;
+
+  --gradient-gold: linear-gradient(
+    135deg,
+    var(--gold-deep) 0%,
+    var(--gold) 45%,
+    var(--gold-light) 100%
+  );
+
+  --radius: 0.75rem; /* radios base 6/12/16px vía la escala de arriba */
+
+  /* charts (dashboard admin) y sidebar quedan con default de shadcn
+     hasta la Fase 3/4, cuando se construye el panel admin */
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    @apply font-sans scroll-smooth;
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+
+  ::selection {
+    background-color: var(--gold);
+    color: var(--ink);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .bg-gradient-gold {
+    background: var(--gradient-gold);
+  }
+
+  .text-gradient-gold {
+    background: var(--gradient-gold);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Skeleton loaders con shimmer dorado tenue (sección 4 del prompt maestro). */
+  .animate-shimmer {
+    background-image: linear-gradient(
+      100deg,
+      var(--ink-soft) 40%,
+      rgba(201, 162, 39, 0.12) 50%,
+      var(--ink-soft) 60%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.8s ease-in-out infinite;
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -50% 0;
+  }
 }
