@@ -71,7 +71,7 @@ export function HomeHero({
 
   return (
     <section className="relative h-[70vh] min-h-[420px] w-full overflow-hidden">
-      <div key={current.id} className="animate-in fade-in duration-500 absolute inset-0">
+      <div key={current.id} className="absolute inset-0">
         <Image
           src={current.imageUrl}
           alt={current.title}
@@ -81,7 +81,10 @@ export function HomeHero({
           className="object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-ink/10" />
-        <div className="absolute inset-0 flex flex-col items-center justify-end gap-4 px-4 pb-16 text-center">
+        <div
+          key={current.id}
+          className="animate-in fade-in duration-500 absolute inset-0 flex flex-col items-center justify-end gap-4 px-4 pb-16 text-center"
+        >
           <h1 className="font-display text-3xl font-semibold text-bone sm:text-5xl">
             {current.title}
           </h1>
