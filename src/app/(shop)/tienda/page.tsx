@@ -10,7 +10,7 @@ import { getProducts } from "@/lib/queries/products";
 
 export const metadata: Metadata = {
   title: "Tienda",
-  description: "Catálogo completo de joyas DIAMONDVA.Co — cadenas, anillos, dijes y más.",
+  description: "Catálogo completo de joyas DIAMONDVA.Co — cadenas, anillos, pulseras y más.",
 };
 
 export default async function TiendaPage({

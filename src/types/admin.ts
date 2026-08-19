@@ -1,4 +1,4 @@
-export type Material = "ORO_18K" | "ORO_BAJO" | "ENCHAPADO" | "PLATA_925" | "ACERO_QUIRURGICO";
+export type Material = "ORO_18K" | "ORO_BAJO" | "ENCHAPADO" | "PLATA_925";
 export type PricingMode = "FIXED" | "BY_WEIGHT";
 
 export type OrderStatus = "NUEVO" | "CONFIRMADO" | "PREPARANDO" | "ENVIADO" | "ENTREGADO" | "CANCELADO";

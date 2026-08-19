@@ -1,4 +1,5 @@
 import { MapPin } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -42,9 +43,13 @@ export function Footer({
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:grid-cols-2 lg:grid-cols-5">
         {/* Marca */}
         <div className="lg:col-span-2">
-          <span className="font-display text-2xl font-semibold tracking-wide">
-            DIAMOND<span className="text-gradient-gold">VA.Co</span>
-          </span>
+          <Image
+            src="/logo.png"
+            alt="DIAMONDVA.Co"
+            width={180}
+            height={60}
+            className="h-14 w-auto object-contain"
+          />
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-silver">
             {settings.aboutText ?? siteConfig.description}
           </p>

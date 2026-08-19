@@ -7,7 +7,6 @@ export const materialEnum = z.enum([
   "ORO_BAJO",
   "ENCHAPADO",
   "PLATA_925",
-  "ACERO_QUIRURGICO",
 ]);
 
 export const pricingModeEnum = z.enum(["FIXED", "BY_WEIGHT"]);

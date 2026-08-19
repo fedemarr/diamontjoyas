@@ -1,6 +1,7 @@
 "use client";
 
 import type { Banner } from "@prisma/client";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -9,8 +10,14 @@ import { Button } from "@/components/ui/button";
 
 /**
  * Hero con carrusel de banners editables (sección 4.3 del prompt
- * maestro). Sin banners activos, cae a un hero de texto usando
- * heroTitle/heroSubtitle de Settings.
+ * maestro). Los banners son piezas de diseño completas — ya traen su
+ * propio título, bajada y botón dibujados adentro de la imagen — por eso
+ * ESTE componente no le encima texto propio: solo la muestra entera,
+ * clickeable, con los controles reales del carrusel bien separados para
+ * no chocar con nada que ya esté en el gráfico.
+ *
+ * Sin banners activos, cae a un hero de texto con heroTitle/heroSubtitle
+ * de Settings (esa rama sí necesita su propio texto, porque no hay imagen).
  */
 export function HomeHero({
   banners,
@@ -22,12 +29,13 @@ export function HomeHero({
   heroSubtitle: string | null;
 }) {
   const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
 
   useEffect(() => {
-    if (banners.length <= 1) return;
+    if (banners.length <= 1 || paused) return;
     const id = setInterval(() => setIndex((i) => (i + 1) % banners.length), 6000);
     return () => clearInterval(id);
-  }, [banners.length]);
+  }, [banners.length, paused]);
 
   if (banners.length === 0) {
     return (
@@ -47,7 +55,7 @@ export function HomeHero({
             {heroTitle ?? "Piezas que se notan, brillo que perdura"}
           </h1>
           <p className="max-w-md text-base text-silver">
-            {heroSubtitle ?? "Enchapadas, oro bajo y oro 18k. Envíos a todo el país."}
+            {heroSubtitle ?? "Enchapadas, oro bajo, oro 18k y plata 925. Envíos a todo el país."}
           </p>
           <div className="mt-2 flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg" className="bg-gradient-gold text-ink hover:opacity-90">
@@ -68,49 +76,69 @@ export function HomeHero({
   }
 
   const current = banners[index];
+  const goTo = (i: number) => setIndex((i + banners.length) % banners.length);
 
   return (
-    <section className="relative h-[70vh] min-h-[420px] w-full overflow-hidden">
-      <div key={current.id} className="absolute inset-0">
+    <section
+      className="group relative w-full overflow-hidden bg-ink"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      {/* Ratio real de las piezas de diseño (1536×341 ≈ 4.5:1) — así no se
+          deforman ni quedan con franjas negras. En mobile se limita la
+          altura para que el texto (siempre a la izquierda) siga siendo
+          legible, recortando la foto decorativa de la derecha. */}
+      <Link
+        href={current.linkUrl ?? "/tienda"}
+        className="relative block aspect-[1536/341] max-h-[65vh] min-h-[220px] w-full sm:min-h-0"
+      >
         <Image
+          key={current.id}
           src={current.imageUrl}
           alt={current.title}
           fill
           priority
           sizes="100vw"
-          className="object-cover"
+          className="animate-in fade-in object-cover object-left duration-500 sm:object-center"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-ink/10" />
-        <div
-          key={current.id}
-          className="animate-in fade-in duration-500 absolute inset-0 flex flex-col items-center justify-end gap-4 px-4 pb-16 text-center"
-        >
-          <h1 className="font-display text-3xl font-semibold text-bone sm:text-5xl">
-            {current.title}
-          </h1>
-          {current.subtitle && (
-            <p className="max-w-md text-sm text-silver sm:text-base">{current.subtitle}</p>
-          )}
-          <Button asChild size="lg" className="bg-gradient-gold text-ink hover:opacity-90">
-            <Link href={current.linkUrl ?? "/tienda"}>Ver más</Link>
-          </Button>
-        </div>
-      </div>
+      </Link>
 
       {banners.length > 1 && (
-        <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-1.5">
-          {banners.map((b, i) => (
-            <button
-              key={b.id}
-              type="button"
-              onClick={() => setIndex(i)}
-              aria-label={`Ver banner ${i + 1}`}
-              className={`h-1.5 rounded-full transition-all ${
-                i === index ? "w-6 bg-gold" : "w-1.5 bg-bone/40"
-              }`}
-            />
-          ))}
-        </div>
+        <>
+          <button
+            type="button"
+            onClick={() => goTo(index - 1)}
+            aria-label="Banner anterior"
+            className="absolute top-1/2 left-3 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-ink/50 text-bone backdrop-blur transition-colors hover:bg-ink/80 hover:text-gold"
+          >
+            <ChevronLeft className="size-5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => goTo(index + 1)}
+            aria-label="Siguiente banner"
+            className="absolute top-1/2 right-3 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-ink/50 text-bone backdrop-blur transition-colors hover:bg-ink/80 hover:text-gold"
+          >
+            <ChevronRight className="size-5" />
+          </button>
+
+          {/* Franja propia debajo de la imagen — a propósito, para no
+              competir con los adornos que el diseño ya tiene encima. */}
+          <div className="flex items-center justify-center gap-1.5 border-t border-ink-border bg-ink py-3">
+            {banners.map((b, i) => (
+              <button
+                key={b.id}
+                type="button"
+                onClick={() => goTo(i)}
+                aria-label={`Ver banner ${i + 1}: ${b.title}`}
+                aria-current={i === index}
+                className={`h-1.5 rounded-full transition-all ${
+                  i === index ? "w-6 bg-gold" : "w-1.5 bg-ink-border hover:bg-silver"
+                }`}
+              />
+            ))}
+          </div>
+        </>
       )}
     </section>
   );

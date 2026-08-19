@@ -21,7 +21,6 @@ const MATERIAL_LABELS: Record<string, string> = {
   ORO_BAJO: "Oro bajo",
   ENCHAPADO: "Enchapado",
   PLATA_925: "Plata 925",
-  ACERO_QUIRURGICO: "Acero quirúrgico",
 };
 
 export default function ProductosPage() {

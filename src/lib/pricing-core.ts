@@ -24,7 +24,7 @@ export type PricingMode = "FIXED" | "BY_WEIGHT";
 /** Materiales con precio por gramo configurado en Settings. */
 export type GoldMaterial = "ORO_18K" | "ORO_BAJO";
 
-export type Material = GoldMaterial | "ENCHAPADO" | "PLATA_925" | "ACERO_QUIRURGICO";
+export type Material = GoldMaterial | "ENCHAPADO" | "PLATA_925";
 
 const GOLD_MATERIALS: readonly GoldMaterial[] = ["ORO_18K", "ORO_BAJO"];
 

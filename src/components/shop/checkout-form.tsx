@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
@@ -61,6 +61,28 @@ export function CheckoutForm({ settings }: { settings: PublicSettings }) {
   const shippingMethod = watch("shippingMethod");
   const paymentMethod = watch("paymentMethod");
   const province = watch("shippingAddress.province");
+
+  // `items` no es un campo que llene el usuario — viene del store del
+  // carrito. Sin este sync, el valor por defecto ([]) nunca cambia y
+  // zodResolver rechaza el submit en silencio (checkoutSchema pide
+  // items.min(1)) sin que se vea ningún error en pantalla.
+  useEffect(() => {
+    setValue(
+      "items",
+      items.map((i) => ({ productId: i.productId, variantId: i.variantId, quantity: i.quantity }))
+    );
+  }, [items, setValue]);
+
+  // RHF no desregistra los inputs de dirección al desmontarlos (no hay
+  // `shouldUnregister`) — si el usuario los tipea y después cambia a
+  // "Retiro en local", quedan strings vacíos colgados en el form state y
+  // el schema los sigue pidiendo (shippingAddress ya no es realmente
+  // `undefined`). Se limpia a mano cada vez que se elige retiro en local.
+  useEffect(() => {
+    if (shippingMethod === "RETIRO_LOCAL") {
+      setValue("shippingAddress", undefined);
+    }
+  }, [shippingMethod, setValue]);
 
   const subtotal = cartSubtotal(items);
   const discount = couponDiscount(coupon, subtotal);
@@ -126,7 +148,12 @@ export function CheckoutForm({ settings }: { settings: PublicSettings }) {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="grid gap-8 lg:grid-cols-[1fr_380px]">
+    <form
+      onSubmit={handleSubmit(onSubmit, () =>
+        setSubmitError("Revisá los datos marcados en rojo antes de confirmar.")
+      )}
+      className="grid gap-8 lg:grid-cols-[1fr_380px]"
+    >
       <div className="flex flex-col gap-8">
         {/* Datos */}
         <section className="flex flex-col gap-4 rounded-lg border border-ink-border bg-ink-soft p-5">

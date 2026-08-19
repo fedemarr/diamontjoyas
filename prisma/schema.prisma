@@ -25,7 +25,6 @@ enum Material {
   ORO_BAJO
   ENCHAPADO
   PLATA_925
-  ACERO_QUIRURGICO
 }
 
 enum PricingMode {

@@ -1,7 +1,8 @@
 "use client";
 
-import { Diamond, Menu, Search } from "lucide-react";
+import { Menu, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -32,7 +33,7 @@ export interface HeaderAnnouncement {
 // categorías completas viven en /tienda (filtros) y en la grilla del home.
 const primaryNavLinks = [
   { name: "Tienda", href: "/tienda" },
-  { name: "Oro 18k", href: "/tienda?material=ORO_18K" },
+  { name: "Cadenas personalizadas", href: "/contacto" },
   { name: "Contacto", href: "/contacto" },
 ];
 
@@ -107,14 +108,17 @@ export function Header({
           {/* Logo */}
           <Link
             href="/"
-            className="flex shrink-0 items-center gap-2"
+            className="flex shrink-0 items-center"
             aria-label="DIAMONDVA.Co — inicio"
           >
-            <Diamond className="size-5 text-gold" strokeWidth={1.5} />
-            <span className="font-display text-xl font-semibold tracking-wide text-bone md:text-2xl">
-              DIAMOND
-              <span className="text-gradient-gold">VA.Co</span>
-            </span>
+            <Image
+              src="/logo.png"
+              alt="DIAMONDVA.Co"
+              width={180}
+              height={60}
+              className="h-14 w-auto object-contain md:h-16"
+              priority
+            />
           </Link>
 
           {/* Nav desktop */}

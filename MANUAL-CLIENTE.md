@@ -19,8 +19,8 @@ Tu panel está en `https://tu-sitio.com/admin` (el botón "Admin" está abajo en
 2. Tocá el botón **Nuevo producto**.
 3. Completá:
    - **Nombre** y **descripción**: lo que ve el cliente.
-   - **Categoría**: elegí una (Cadenas, Aros, etc.).
-   - **Material**: oro 18k, oro bajo, enchapado, plata o acero.
+   - **Categoría**: elegí una (Cadenas, Anillos, Pulseras).
+   - **Material**: oro 18k, oro bajo, enchapado o plata 925.
    - **Precio**: dos formas:
      - *Precio fijo*: el precio que querés cobrar.
      - *Por gramo*: cargás el peso y el precio se calcula solo según el precio del oro del día.
