@@ -80,6 +80,15 @@ Podés elegir el período (7, 30, 90 días o una fecha puntual).
 
 **Banners**: las imágenes grandes del inicio. En **Banners y anuncios** → *Banners del home* creás o editás los que se ven arriba en la página principal. Podés ponerles un link (ej. a la tienda).
 
+Cada banner es una sola imagen ya diseñada (con su texto, logo y botón dibujados adentro) — el sitio no le agrega nada arriba, así que el diseño tiene que venir terminado. Para que se vea perfecta, sin recortes raros ni espacios vacíos, tiene que tener exactamente esta medida:
+
+| Uso | Medida recomendada | Proporción |
+|---|---|---|
+| **Banner de escritorio/tablet** (campo *Imagen*) | 1920 × 427 px | 4,5 : 1 (muy panorámica) |
+| **Banner de celular** (campo *Imagen mobile*) | 1080 × 1350 px | 4 : 5 (vertical) |
+
+Si solo cargás la de escritorio y dejás la de mobile vacía (o igual a la otra), el sitio usa la misma imagen recortada para celular — funciona, pero se pierde parte del diseño de la derecha. Lo ideal es pedir **las dos versiones** (podés pedírselas a un diseñador o generarlas con IA tipo ChatGPT/DALL-E dándole esas medidas exactas) y cargar cada una en su campo.
+
 **Anuncios**: los textos cortos que rotan en la barra superior del sitio (ej. "Envíos gratis desde $80.000").
 
 ---

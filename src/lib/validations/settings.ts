@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { imageUrlSchema } from "@/lib/validations/common";
+
 export const goldPriceUpdateSchema = z.object({
   goldPricePerGram18k: z.number().positive("Tiene que ser mayor a 0"),
   goldPricePerGramLow: z.number().positive("Tiene que ser mayor a 0"),
@@ -14,7 +16,7 @@ export type GoldPriceUpdateInput = z.infer<typeof goldPriceUpdateSchema>;
  */
 export const settingsUpdateSchema = z.object({
   storeName: z.string().min(1, "El nombre de la tienda es obligatorio").max(80),
-  logoUrl: z.union([z.url("URL de imagen inválida"), z.literal("")]).optional(),
+  logoUrl: z.union([imageUrlSchema, z.literal("")]).optional(),
   maintenanceMode: z.boolean(),
 
   heroTitle: z.string().max(120),

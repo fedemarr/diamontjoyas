@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { imageUrlSchema } from "@/lib/validations/common";
+
 const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 export const categorySchema = z.object({
@@ -10,7 +12,7 @@ export const categorySchema = z.object({
     .max(80)
     .regex(slugRegex, "Solo minúsculas, números y guiones (ej: anillos-y-sellos)"),
   description: z.string().max(500).optional().or(z.literal("")),
-  imageUrl: z.union([z.url("URL de imagen inválida"), z.literal("")]).optional(),
+  imageUrl: z.union([imageUrlSchema, z.literal("")]).optional(),
   icon: z.string().max(40).optional().or(z.literal("")),
   // Sin .default(): el form siempre manda estos dos vía defaultValues de
   // RHF — con .default() acá, zodResolver infiere un tipo "input" con

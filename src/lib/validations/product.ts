@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { imageUrlSchema } from "@/lib/validations/common";
+
 const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 export const materialEnum = z.enum([
@@ -13,7 +15,7 @@ export const pricingModeEnum = z.enum(["FIXED", "BY_WEIGHT"]);
 
 export const productImageSchema = z.object({
   id: z.string().optional(),
-  url: z.url("URL de imagen inválida"),
+  url: imageUrlSchema,
   alt: z.string().min(1, "El texto alternativo es obligatorio (accesibilidad y SEO)").max(150),
   order: z.number().int().min(0),
   isPrimary: z.boolean(),

@@ -99,6 +99,10 @@ export function BannerFormDialog({
   });
 
   const imageUrl = watch("imageUrl");
+  const mobileImageUrl = watch("mobileImageUrl");
+  const [uploadingMobile, setUploadingMobile] = useState(false);
+  const [uploadErrorMobile, setUploadErrorMobile] = useState<string | null>(null);
+  const mobileInputRef = useRef<HTMLInputElement>(null);
 
   async function handleUpload(file: File) {
     setUploadError(null);
@@ -113,49 +117,106 @@ export function BannerFormDialog({
     }
   }
 
+  async function handleUploadMobile(file: File) {
+    setUploadErrorMobile(null);
+    setUploadingMobile(true);
+    try {
+      const { url } = await uploadImageToCloudinary(file);
+      setValue("mobileImageUrl", url, { shouldValidate: true });
+    } catch (err) {
+      setUploadErrorMobile(err instanceof Error ? err.message : "Error subiendo la imagen");
+    } finally {
+      setUploadingMobile(false);
+    }
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{banner ? "Editar banner" : "Nuevo banner"}</DialogTitle>
           <DialogDescription>
-            Se muestra en el hero del home. Imagen recomendada ~1600×600px.
+            Cada banner es una imagen ya diseñada (con su texto y botón dibujados adentro) — el
+            sitio no le agrega nada arriba, así que tiene que venir terminada.
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit((data) => mutation.mutate(data))} className="flex flex-col gap-4">
-          <div
-            role="button"
-            tabIndex={0}
-            onClick={() => inputRef.current?.click()}
-            onKeyDown={(e) => e.key === "Enter" && inputRef.current?.click()}
-            className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-ink-border bg-ink px-4 py-6 text-center transition-colors hover:border-gold/50"
-          >
-            {imageUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element -- imagen de banner, no requiere next/image
-              <img
-                src={imageUrl}
-                alt="Vista previa del banner"
-                className="max-h-32 w-full rounded-md object-cover"
+          <div className="flex flex-col gap-1.5">
+            <Label>Imagen de escritorio</Label>
+            <p className="text-xs text-silver">Medida recomendada: 1920×427px (formato panorámico, 4,5:1).</p>
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => inputRef.current?.click()}
+              onKeyDown={(e) => e.key === "Enter" && inputRef.current?.click()}
+              className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-ink-border bg-ink px-4 py-6 text-center transition-colors hover:border-gold/50"
+            >
+              {imageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element -- imagen de banner, no requiere next/image
+                <img
+                  src={imageUrl}
+                  alt="Vista previa del banner de escritorio"
+                  className="max-h-32 w-full rounded-md object-cover"
+                />
+              ) : uploading ? (
+                <Loader2 className="size-6 animate-spin text-gold" />
+              ) : (
+                <ImagePlus className="size-6 text-silver" />
+              )}
+              <p className="text-sm text-silver">
+                {uploading ? "Subiendo..." : "Subí la imagen de escritorio"}
+              </p>
+              <input
+                ref={inputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => e.target.files?.[0] && handleUpload(e.target.files[0])}
               />
-            ) : uploading ? (
-              <Loader2 className="size-6 animate-spin text-gold" />
-            ) : (
-              <ImagePlus className="size-6 text-silver" />
-            )}
-            <p className="text-sm text-silver">
-              {uploading ? "Subiendo..." : "Subí la imagen del banner"}
-            </p>
-            <input
-              ref={inputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => e.target.files?.[0] && handleUpload(e.target.files[0])}
-            />
+            </div>
+            {uploadError && <p className="text-sm text-danger">{uploadError}</p>}
+            {errors.imageUrl && <p className="text-xs text-danger">Subí una imagen o cargá una URL válida.</p>}
           </div>
-          {uploadError && <p className="text-sm text-danger">{uploadError}</p>}
-          {errors.imageUrl && <p className="text-xs text-danger">Subí una imagen o cargá una URL válida.</p>}
+
+          <div className="flex flex-col gap-1.5">
+            <Label>Imagen de celular (opcional)</Label>
+            <p className="text-xs text-silver">
+              Medida recomendada: 1080×1350px (formato vertical, 4:5). Si no cargás una, en el
+              celular se recorta la de escritorio.
+            </p>
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => mobileInputRef.current?.click()}
+              onKeyDown={(e) => e.key === "Enter" && mobileInputRef.current?.click()}
+              className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-ink-border bg-ink px-4 py-6 text-center transition-colors hover:border-gold/50"
+            >
+              {mobileImageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element -- imagen de banner, no requiere next/image
+                <img
+                  src={mobileImageUrl}
+                  alt="Vista previa del banner de celular"
+                  className="max-h-32 rounded-md object-cover"
+                />
+              ) : uploadingMobile ? (
+                <Loader2 className="size-6 animate-spin text-gold" />
+              ) : (
+                <ImagePlus className="size-6 text-silver" />
+              )}
+              <p className="text-sm text-silver">
+                {uploadingMobile ? "Subiendo..." : "Subí la imagen de celular"}
+              </p>
+              <input
+                ref={mobileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => e.target.files?.[0] && handleUploadMobile(e.target.files[0])}
+              />
+            </div>
+            {uploadErrorMobile && <p className="text-sm text-danger">{uploadErrorMobile}</p>}
+          </div>
 
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="title">Título</Label>

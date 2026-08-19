@@ -18,6 +18,11 @@ import { Button } from "@/components/ui/button";
  *
  * Sin banners activos, cae a un hero de texto con heroTitle/heroSubtitle
  * de Settings (esa rama sí necesita su propio texto, porque no hay imagen).
+ *
+ * Desktop y mobile pueden usar imágenes distintas (`imageUrl` /
+ * `mobileImageUrl`) — medidas recomendadas en MANUAL-CLIENTE.md. Si el
+ * admin no cargó una imagen de mobile propia, se recorta la de desktop
+ * como respaldo (nunca queda una imagen rota).
  */
 export function HomeHero({
   banners,
@@ -84,24 +89,54 @@ export function HomeHero({
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      {/* Ratio real de las piezas de diseño (1536×341 ≈ 4.5:1) — así no se
-          deforman ni quedan con franjas negras. En mobile se limita la
-          altura para que el texto (siempre a la izquierda) siga siendo
-          legible, recortando la foto decorativa de la derecha. */}
-      <Link
-        href={current.linkUrl ?? "/tienda"}
-        className="relative block aspect-[1536/341] max-h-[65vh] min-h-[220px] w-full sm:min-h-0"
-      >
-        <Image
-          key={current.id}
-          src={current.imageUrl}
-          alt={current.title}
-          fill
-          priority
-          sizes="100vw"
-          className="animate-in fade-in object-cover object-left duration-500 sm:object-center"
-        />
-      </Link>
+      {(() => {
+        const hasOwnMobileImage =
+          !!current.mobileImageUrl && current.mobileImageUrl !== current.imageUrl;
+
+        return (
+          <Link href={current.linkUrl ?? "/tienda"} className="relative block w-full">
+            {/* Desktop/tablet — ratio panorámico (1536×341 ≈ 4.5:1, ver
+                MANUAL-CLIENTE.md para las medidas exactas de banner). */}
+            <div className="relative hidden aspect-[1536/341] max-h-[65vh] w-full sm:block">
+              <Image
+                key={`${current.id}-desktop`}
+                src={current.imageUrl}
+                alt={current.title}
+                fill
+                priority
+                sizes="100vw"
+                className="animate-in fade-in object-cover object-center duration-500"
+              />
+            </div>
+
+            {/* Mobile — si hay una imagen propia para mobile (mobileImageUrl
+                distinto del de desktop), se usa completa en formato
+                retrato 4:5. Si no, se recorta la de desktop como respaldo
+                (ancla a la izquierda, donde suele estar el texto). */}
+            <div
+              className={
+                hasOwnMobileImage
+                  ? "relative aspect-[4/5] w-full sm:hidden"
+                  : "relative min-h-[220px] w-full sm:hidden"
+              }
+            >
+              <Image
+                key={`${current.id}-mobile`}
+                src={hasOwnMobileImage ? current.mobileImageUrl! : current.imageUrl}
+                alt={current.title}
+                fill
+                priority
+                sizes="100vw"
+                className={
+                  hasOwnMobileImage
+                    ? "animate-in fade-in object-cover object-center duration-500"
+                    : "animate-in fade-in object-cover object-left duration-500"
+                }
+              />
+            </div>
+          </Link>
+        );
+      })()}
 
       {banners.length > 1 && (
         <>
