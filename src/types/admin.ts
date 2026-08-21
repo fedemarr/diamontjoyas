@@ -281,6 +281,10 @@ export interface SettingsState {
   bankAlias: string | null;
   bankCbu: string | null;
   bankHolderName: string | null;
+  silverPricePerGram: number;
+  platedPricePerGram: number;
+  customChainGramsPerCm: number;
+  customChainLaborCost: number;
 }
 
 // ── Dashboard ──────────────────────────────────────────────────────────

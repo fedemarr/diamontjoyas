@@ -34,6 +34,10 @@ const DEFAULTS: SettingsState = {
   bankAlias: null,
   bankCbu: null,
   bankHolderName: null,
+  silverPricePerGram: 0,
+  platedPricePerGram: 0,
+  customChainGramsPerCm: 1.2,
+  customChainLaborCost: 5000,
 };
 
 export async function getSettingsState(): Promise<SettingsState> {

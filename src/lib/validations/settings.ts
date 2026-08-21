@@ -44,6 +44,14 @@ export const settingsUpdateSchema = z.object({
   bankAlias: z.string().max(120).optional().or(z.literal("")),
   bankCbu: z.string().max(60).optional().or(z.literal("")),
   bankHolderName: z.string().max(120).optional().or(z.literal("")),
+
+  // Cadenas a medida (cotizador del home): precio por gramo de plata y
+  // enchapado (el oro ya tiene su propio Setting en /admin/precio-oro), más
+  // los supuestos con los que se arma el "desde $X" orientativo.
+  silverPricePerGram: z.number().positive("Tiene que ser mayor a 0"),
+  platedPricePerGram: z.number().positive("Tiene que ser mayor a 0"),
+  customChainGramsPerCm: z.number().positive("Tiene que ser mayor a 0"),
+  customChainLaborCost: z.number().min(0),
 });
 
 export type SettingsUpdateInput = z.infer<typeof settingsUpdateSchema>;

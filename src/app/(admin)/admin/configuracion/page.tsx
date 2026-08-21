@@ -21,6 +21,7 @@ const TABS = [
   { id: "contacto", label: "Contacto" },
   { id: "envios", label: "Envíos" },
   { id: "pagos", label: "Pagos" },
+  { id: "cadenas", label: "Cadenas a medida" },
   { id: "redes", label: "Redes" },
 ] as const;
 
@@ -71,6 +72,10 @@ export default function ConfiguracionPage() {
       bankAlias: "",
       bankCbu: "",
       bankHolderName: "",
+      silverPricePerGram: 0,
+      platedPricePerGram: 0,
+      customChainGramsPerCm: 1.2,
+      customChainLaborCost: 5000,
     },
   });
 
@@ -99,6 +104,10 @@ export default function ConfiguracionPage() {
       bankAlias: s.bankAlias ?? "",
       bankCbu: s.bankCbu ?? "",
       bankHolderName: s.bankHolderName ?? "",
+      silverPricePerGram: s.silverPricePerGram,
+      platedPricePerGram: s.platedPricePerGram,
+      customChainGramsPerCm: s.customChainGramsPerCm,
+      customChainLaborCost: s.customChainLaborCost,
     });
   }, [data, reset]);
 
@@ -335,6 +344,66 @@ export default function ConfiguracionPage() {
               </div>
               <Field label="Titular de la cuenta">
                 <Input {...register("bankHolderName")} className="border-ink-border bg-ink text-bone" />
+              </Field>
+            </div>
+          </div>
+        )}
+
+        {tab === "cadenas" && (
+          <div className="flex flex-col gap-4">
+            <h2 className="text-xs font-semibold tracking-luxury text-gold-light uppercase">
+              Cotizador de cadenas a medida
+            </h2>
+            <p className="text-xs text-silver">
+              Con estos valores se arma el &quot;desde $X&quot; orientativo del formulario de cadena
+              personalizada en el home. El oro 18k y oro bajo ya tienen su propio precio en{" "}
+              <span className="text-bone">Precio del oro</span> — acá solo hace falta plata y
+              enchapado.
+            </p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Plata 925 — precio por gramo ($)">
+                <Input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  {...register("silverPricePerGram", { setValueAs: Number })}
+                  className="border-ink-border bg-ink text-bone"
+                />
+                {errorMsg("silverPricePerGram")}
+              </Field>
+              <Field label="Enchapado — precio por gramo ($)">
+                <Input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  {...register("platedPricePerGram", { setValueAs: Number })}
+                  className="border-ink-border bg-ink text-bone"
+                />
+                {errorMsg("platedPricePerGram")}
+              </Field>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field
+                label="Gramos por cm (grosor mediano)"
+                hint="Peso aproximado de un cm de cadena mediana. El fino usa 70% de este valor y el grueso 140%."
+              >
+                <Input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  {...register("customChainGramsPerCm", { setValueAs: Number })}
+                  className="border-ink-border bg-ink text-bone"
+                />
+                {errorMsg("customChainGramsPerCm")}
+              </Field>
+              <Field label="Costo de mano de obra mínimo ($)" hint="Se suma siempre, además del material.">
+                <Input
+                  type="number"
+                  min="0"
+                  {...register("customChainLaborCost", { setValueAs: Number })}
+                  className="border-ink-border bg-ink text-bone"
+                />
+                {errorMsg("customChainLaborCost")}
               </Field>
             </div>
           </div>

@@ -11,6 +11,7 @@ import { getActiveCategories } from "@/lib/queries/categories";
 import { getActiveBanners } from "@/lib/queries/marketing";
 import { getFeaturedProducts } from "@/lib/queries/products";
 import { getPublicSettings } from "@/lib/queries/settings";
+import { getGoldPrices } from "@/lib/pricing";
 import { siteConfig } from "@/lib/site-config";
 
 export const metadata: Metadata = {
@@ -20,11 +21,12 @@ export const metadata: Metadata = {
 export const revalidate = 60;
 
 export default async function HomePage() {
-  const [banners, settings, categories, featured] = await Promise.all([
+  const [banners, settings, categories, featured, goldPrices] = await Promise.all([
     getActiveBanners(),
     getPublicSettings(),
     getActiveCategories(),
     getFeaturedProducts(10),
+    getGoldPrices(),
   ]);
 
   return (
@@ -47,7 +49,17 @@ export default async function HomePage() {
 
       <AboutSection aboutText={settings.aboutText} />
 
-      <CustomChainSection />
+      <CustomChainSection
+        whatsapp={settings.whatsapp}
+        priceSettings={{
+          goldPricePerGram18k: goldPrices.goldPricePerGram18k.toNumber(),
+          goldPricePerGramLow: goldPrices.goldPricePerGramLow.toNumber(),
+          silverPricePerGram: settings.silverPricePerGram,
+          platedPricePerGram: settings.platedPricePerGram,
+          customChainGramsPerCm: settings.customChainGramsPerCm,
+          customChainLaborCost: settings.customChainLaborCost,
+        }}
+      />
 
       <InstagramFeed
         handle={siteConfig.instagram.handle}

@@ -29,6 +29,10 @@ export interface PublicSettings {
   bankAlias: string | null;
   bankCbu: string | null;
   bankHolderName: string | null;
+  silverPricePerGram: number;
+  platedPricePerGram: number;
+  customChainGramsPerCm: number;
+  customChainLaborCost: number;
 }
 
 const DEFAULTS: PublicSettings = {
@@ -53,6 +57,10 @@ const DEFAULTS: PublicSettings = {
   bankAlias: null,
   bankCbu: null,
   bankHolderName: null,
+  silverPricePerGram: 0,
+  platedPricePerGram: 0,
+  customChainGramsPerCm: 1.2,
+  customChainLaborCost: 5000,
 };
 
 /**

@@ -33,7 +33,7 @@ export interface HeaderAnnouncement {
 // categorías completas viven en /tienda (filtros) y en la grilla del home.
 const primaryNavLinks = [
   { name: "Tienda", href: "/tienda" },
-  { name: "Cadenas personalizadas", href: "/contacto" },
+  { name: "Cadenas personalizadas", href: "/#cadena-personalizada" },
   { name: "Contacto", href: "/contacto" },
 ];
 
@@ -54,6 +54,7 @@ export function Header({
   const mobileNavLinks = [
     { name: "Tienda", href: "/tienda" },
     ...categories.map((c) => ({ name: c.name, href: `/categoria/${c.slug}` })),
+    { name: "Cadenas personalizadas", href: "/#cadena-personalizada" },
     { name: "Contacto", href: "/contacto" },
   ];
 

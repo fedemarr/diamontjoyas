@@ -1,7 +1,7 @@
 "use client";
 
 import { MessageCircle, Link as LinkIcon } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,19 +13,45 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  estimateCustomChainPrice,
+  THICKNESS_LABELS,
+  type ChainThickness,
+  type CustomChainPriceSettings,
+} from "@/lib/custom-chain-pricing";
+import { formatARS } from "@/lib/format";
+import type { Material } from "@/lib/pricing-core";
+import { buildWhatsappUrl } from "@/lib/queries/settings";
 
-const materialOptions = [
+const materialOptions: { value: Material; label: string }[] = [
   { value: "ORO_18K", label: "Oro 18k" },
   { value: "ORO_BAJO", label: "Oro bajo" },
   { value: "ENCHAPADO", label: "Enchapado" },
   { value: "PLATA_925", label: "Plata 925" },
 ];
 
-export function CustomChainSection() {
-  const [material, setMaterial] = useState("");
+const thicknessOptions: ChainThickness[] = ["FINA", "MEDIANA", "GRUESA"];
+
+export function CustomChainSection({
+  priceSettings,
+  whatsapp,
+}: {
+  priceSettings: CustomChainPriceSettings;
+  whatsapp: string | null;
+}) {
+  const [material, setMaterial] = useState<Material | "">("");
   const [length, setLength] = useState("");
+  const [thickness, setThickness] = useState<ChainThickness>("MEDIANA");
   const [description, setDescription] = useState("");
   const [name, setName] = useState("");
+
+  const estimate = useMemo(() => {
+    if (!material || !length) return 0;
+    return estimateCustomChainPrice(
+      { material, lengthCm: Number(length), thickness },
+      priceSettings
+    );
+  }, [material, length, thickness, priceSettings]);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -38,15 +64,21 @@ export function CustomChainSection() {
       name ? `Nombre: ${name}` : "",
       material ? `Material: ${materialLabel}` : "",
       length ? `Largo aproximado: ${length}cm` : "",
+      material && length ? `Grosor: ${THICKNESS_LABELS[thickness]}` : "",
+      estimate > 0 ? `Estimado orientativo: desde ${formatARS(estimate)} (a confirmar)` : "",
       description ? `Descripción: ${description}` : "",
     ].filter(Boolean);
 
-    const text = encodeURIComponent(lines.join("\n"));
-    window.open(`https://wa.me/5491100000000?text=${text}`, "_blank");
+    const text = lines.join("\n");
+    const url = buildWhatsappUrl(whatsapp, text) ?? `https://wa.me/?text=${encodeURIComponent(text)}`;
+    window.open(url, "_blank");
   }
 
   return (
-    <section className="relative overflow-hidden border-y border-gold/20 bg-[radial-gradient(ellipse_at_top,rgba(201,162,39,0.06),transparent_60%)]">
+    <section
+      id="cadena-personalizada"
+      className="relative scroll-mt-24 overflow-hidden border-y border-gold/20 bg-[radial-gradient(ellipse_at_top,rgba(201,162,39,0.06),transparent_60%)]"
+    >
       <div className="mx-auto max-w-7xl px-4 py-16 md:py-24">
         <div className="mx-auto max-w-2xl text-center">
           <div className="mb-4 flex items-center justify-center gap-2 text-gold">
@@ -61,7 +93,8 @@ export function CustomChainSection() {
           </h2>
 
           <p className="mt-4 text-base text-silver">
-            Elegí el material, el largo y contanos qué tenés en mente. Te la cotizamos sin compromiso por WhatsApp.
+            Elegí el material, el largo y el grosor para ver un estimado al instante. El precio final
+            siempre se confirma por WhatsApp según el diseño exacto.
           </p>
         </div>
 
@@ -82,11 +115,11 @@ export function CustomChainSection() {
             />
           </div>
 
-          <div className="sm:col-span-2">
+          <div>
             <label htmlFor="chain-material" className="mb-1 block text-xs font-medium text-silver">
               Material
             </label>
-            <Select value={material} onValueChange={setMaterial}>
+            <Select value={material} onValueChange={(v) => setMaterial(v as Material)}>
               <SelectTrigger
                 id="chain-material"
                 className="border-ink-border bg-ink-soft text-bone focus:border-gold focus:ring-gold/40"
@@ -97,6 +130,27 @@ export function CustomChainSection() {
                 {materialOptions.map((m) => (
                   <SelectItem key={m.value} value={m.value}>
                     {m.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <label htmlFor="chain-thickness" className="mb-1 block text-xs font-medium text-silver">
+              Grosor
+            </label>
+            <Select value={thickness} onValueChange={(v) => setThickness(v as ChainThickness)}>
+              <SelectTrigger
+                id="chain-thickness"
+                className="border-ink-border bg-ink-soft text-bone focus:border-gold focus:ring-gold/40"
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="border-ink-border bg-ink text-bone">
+                {thicknessOptions.map((t) => (
+                  <SelectItem key={t} value={t}>
+                    {THICKNESS_LABELS[t]}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -119,6 +173,18 @@ export function CustomChainSection() {
             />
           </div>
 
+          {estimate > 0 && (
+            <div className="sm:col-span-2 rounded-md border border-gold/30 bg-gold/5 px-4 py-3 text-center">
+              <p className="text-xs font-medium tracking-wide text-silver uppercase">Estimado orientativo</p>
+              <p className="font-display text-2xl font-semibold text-gold-light">
+                desde {formatARS(estimate)}
+              </p>
+              <p className="mt-1 text-xs text-silver/70">
+                Aproximado — el precio final se confirma por WhatsApp según el diseño exacto.
+              </p>
+            </div>
+          )}
+
           <div className="sm:col-span-2">
             <label htmlFor="chain-desc" className="mb-1 block text-xs font-medium text-silver">
               ¿Qué tenés en mente?
@@ -127,7 +193,7 @@ export function CustomChainSection() {
               id="chain-desc"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Ej: Una cadena tipo fígaro, eslabones medium, con cierreTexto tipo lobster..."
+              placeholder="Ej: Una cadena tipo fígaro, eslabones medium, con cierre tipo lobster..."
               rows={3}
               className="border-ink-border bg-ink-soft text-bone placeholder:text-silver/60 focus-visible:border-gold focus-visible:ring-gold/40"
             />
