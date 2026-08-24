@@ -52,6 +52,15 @@ export const settingsUpdateSchema = z.object({
   platedPricePerGram: z.number().positive("Tiene que ser mayor a 0"),
   customChainGramsPerCm: z.number().positive("Tiene que ser mayor a 0"),
   customChainLaborCost: z.number().min(0),
+
+  // Popup promocional (modal al cargar el home) — reusa Setting en vez de
+  // un modelo propio, mismo patrón que el resto de la configuración.
+  popupEnabled: z.boolean(),
+  popupTitle: z.string().max(80).optional().or(z.literal("")),
+  popupMessage: z.string().max(300).optional().or(z.literal("")),
+  popupImageUrl: z.union([imageUrlSchema, z.literal("")]).optional(),
+  popupLinkUrl: z.string().max(300).optional().or(z.literal("")),
+  popupButtonText: z.string().max(40).optional().or(z.literal("")),
 });
 
 export type SettingsUpdateInput = z.infer<typeof settingsUpdateSchema>;

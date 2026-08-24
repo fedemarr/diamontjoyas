@@ -29,7 +29,15 @@ const PAYMENT_METHODS = [
   { value: "EFECTIVO", label: "Efectivo en local" },
 ] as const;
 
-export function CheckoutForm({ settings }: { settings: PublicSettings }) {
+const MEMBER_DISCOUNT_PERCENT = 5;
+
+export function CheckoutForm({
+  settings,
+  isCustomerLoggedIn,
+}: {
+  settings: PublicSettings;
+  isCustomerLoggedIn: boolean;
+}) {
   const router = useRouter();
   const items = useCartStore((s) => s.items);
   const coupon = useCartStore((s) => s.coupon);
@@ -85,7 +93,12 @@ export function CheckoutForm({ settings }: { settings: PublicSettings }) {
   }, [shippingMethod, setValue]);
 
   const subtotal = cartSubtotal(items);
-  const discount = couponDiscount(coupon, subtotal);
+  // El 5% de socio y el cupón nunca se combinan — el server aplica la misma
+  // regla en /api/checkout (fuente de verdad), esto es solo para mostrar
+  // el total correcto antes de confirmar.
+  const memberDiscountApplies = isCustomerLoggedIn && !coupon;
+  const memberDiscount = memberDiscountApplies ? subtotal * (MEMBER_DISCOUNT_PERCENT / 100) : 0;
+  const discount = couponDiscount(coupon, subtotal) + memberDiscount;
   const shippingCost = useMemo(
     () => calculateShippingCost(shippingMethod, province ?? null, settings.shippingRates),
     [shippingMethod, province, settings.shippingRates]
@@ -155,6 +168,24 @@ export function CheckoutForm({ settings }: { settings: PublicSettings }) {
       className="grid gap-8 lg:grid-cols-[1fr_380px]"
     >
       <div className="flex flex-col gap-8">
+        {memberDiscountApplies ? (
+          <p className="rounded-md border border-gold/30 bg-gold/5 px-4 py-3 text-sm text-gold-light">
+            Estás logueado — se te aplicó {MEMBER_DISCOUNT_PERCENT}% de descuento de socio.
+          </p>
+        ) : isCustomerLoggedIn && coupon ? (
+          <p className="rounded-md border border-ink-border bg-ink-soft px-4 py-3 text-sm text-silver">
+            Estás usando un cupón, así que no se suma el {MEMBER_DISCOUNT_PERCENT}% de socio (no se
+            combinan).
+          </p>
+        ) : (
+          <p className="rounded-md border border-ink-border bg-ink-soft px-4 py-3 text-sm text-silver">
+            <a href="/cuenta/ingresar" className="text-gold-light hover:underline">
+              Iniciá sesión
+            </a>{" "}
+            y llevate {MEMBER_DISCOUNT_PERCENT}% off en esta compra.
+          </p>
+        )}
+
         {/* Datos */}
         <section className="flex flex-col gap-4 rounded-lg border border-ink-border bg-ink-soft p-5">
           <h2 className="font-display text-lg font-semibold text-bone">1. Tus datos</h2>

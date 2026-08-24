@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu, Search } from "lucide-react";
+import { Menu, Search, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -41,10 +41,13 @@ export function Header({
   categories,
   announcements,
   freeShippingThreshold,
+  customerName,
 }: {
   categories: HeaderCategory[];
   announcements: HeaderAnnouncement[];
   freeShippingThreshold: number | null;
+  /** Nombre del cliente logueado (sesión "customer") — null si nadie logueado. */
+  customerName?: string | null;
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -56,6 +59,7 @@ export function Header({
     ...categories.map((c) => ({ name: c.name, href: `/categoria/${c.slug}` })),
     { name: "Cadenas personalizadas", href: "/#cadena-personalizada" },
     { name: "Contacto", href: "/contacto" },
+    { name: customerName ? "Mi cuenta" : "Ingresar / Crear cuenta", href: customerName ? "/cuenta" : "/cuenta/ingresar" },
   ];
 
   function handleSearch(e: React.FormEvent) {
@@ -151,6 +155,18 @@ export function Header({
           </form>
 
           <div className="ml-auto flex items-center gap-1 md:ml-0">
+            <Button
+              asChild
+              variant="ghost"
+              size="icon"
+              className="hidden text-bone hover:bg-ink-soft hover:text-gold md:inline-flex"
+              aria-label={customerName ? "Mi cuenta" : "Ingresar"}
+            >
+              <Link href={customerName ? "/cuenta" : "/cuenta/ingresar"} title={customerName ?? "Ingresar"}>
+                <User className="size-5" />
+              </Link>
+            </Button>
+
             <Sheet>
               <SheetTrigger asChild>
                 <Button

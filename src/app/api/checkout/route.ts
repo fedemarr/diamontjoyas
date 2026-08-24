@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import { NextResponse, type NextRequest } from "next/server";
 
 import { handleApiError } from "@/lib/api-errors";
+import { auth } from "@/lib/auth";
 import { calculateCouponDiscount, validateCoupon } from "@/lib/coupon";
 import { db } from "@/lib/db";
 import { emitEvent } from "@/lib/events";
@@ -12,6 +13,9 @@ import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import { calculateShippingCost } from "@/lib/shipping";
 import { getPublicSettings } from "@/lib/queries/settings";
 import { checkoutSchema } from "@/lib/validations/checkout";
+
+/** 5% para clientes logueados que no usan cupón — no configurable por ahora. */
+const MEMBER_DISCOUNT_PERCENT = 5;
 
 class CheckoutError extends Error {
   status: number;
@@ -110,6 +114,20 @@ export async function POST(request: NextRequest) {
       couponCode = coupon.code;
     }
 
+    // 2.1) 5% de socio — solo si hay sesión de CLIENTE (nunca admin) y no
+    // se usó cupón (no se combinan). El customerId también se lee de la
+    // sesión, nunca del body, para que no se pueda falsear.
+    let customerId: string | null = null;
+    let memberDiscountApplied = false;
+    if (!data.couponCode) {
+      const session = await auth();
+      if (session?.user?.kind === "customer") {
+        customerId = session.user.id;
+        discount = subtotal.times(MEMBER_DISCOUNT_PERCENT).dividedBy(100);
+        memberDiscountApplied = true;
+      }
+    }
+
     // 3) Envío
     const shippingCost = new Prisma.Decimal(
       calculateShippingCost(
@@ -140,6 +158,8 @@ export async function POST(request: NextRequest) {
           customerEmail: data.customerEmail,
           customerPhone: data.customerPhone,
           customerDni: data.customerDni || null,
+          customerId,
+          memberDiscountApplied,
           shippingMethod: data.shippingMethod,
           shippingAddress: data.shippingAddress
             ? (data.shippingAddress as unknown as Prisma.InputJsonValue)

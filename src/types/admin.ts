@@ -285,6 +285,12 @@ export interface SettingsState {
   platedPricePerGram: number;
   customChainGramsPerCm: number;
   customChainLaborCost: number;
+  popupEnabled: boolean;
+  popupTitle: string;
+  popupMessage: string;
+  popupImageUrl: string | null;
+  popupLinkUrl: string | null;
+  popupButtonText: string;
 }
 
 // ── Dashboard ──────────────────────────────────────────────────────────

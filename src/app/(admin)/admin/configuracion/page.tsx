@@ -22,6 +22,7 @@ const TABS = [
   { id: "envios", label: "Envíos" },
   { id: "pagos", label: "Pagos" },
   { id: "cadenas", label: "Cadenas a medida" },
+  { id: "popup", label: "Popup" },
   { id: "redes", label: "Redes" },
 ] as const;
 
@@ -76,6 +77,12 @@ export default function ConfiguracionPage() {
       platedPricePerGram: 0,
       customChainGramsPerCm: 1.2,
       customChainLaborCost: 5000,
+      popupEnabled: false,
+      popupTitle: "",
+      popupMessage: "",
+      popupImageUrl: "",
+      popupLinkUrl: "",
+      popupButtonText: "Ver más",
     },
   });
 
@@ -108,6 +115,12 @@ export default function ConfiguracionPage() {
       platedPricePerGram: s.platedPricePerGram,
       customChainGramsPerCm: s.customChainGramsPerCm,
       customChainLaborCost: s.customChainLaborCost,
+      popupEnabled: s.popupEnabled,
+      popupTitle: s.popupTitle,
+      popupMessage: s.popupMessage,
+      popupImageUrl: s.popupImageUrl ?? "",
+      popupLinkUrl: s.popupLinkUrl ?? "",
+      popupButtonText: s.popupButtonText,
     });
   }, [data, reset]);
 
@@ -404,6 +417,54 @@ export default function ConfiguracionPage() {
                   className="border-ink-border bg-ink text-bone"
                 />
                 {errorMsg("customChainLaborCost")}
+              </Field>
+            </div>
+          </div>
+        )}
+
+        {tab === "popup" && (
+          <div className="flex flex-col gap-4">
+            <h2 className="text-xs font-semibold tracking-luxury text-gold-light uppercase">
+              Popup promocional
+            </h2>
+            <p className="text-xs text-silver">
+              Aparece una sola vez centrado en pantalla cuando alguien entra al home. Se puede cerrar
+              con la X — si edita el título o el mensaje, vuelve a aparecer aunque ya lo hayan cerrado.
+            </p>
+            <div className="flex items-center justify-between rounded-md border border-ink-border bg-ink p-4">
+              <div>
+                <Label htmlFor="popupEnabled" className="text-bone">
+                  Mostrar el popup
+                </Label>
+                <p className="text-xs text-silver">Apagalo para dejar de mostrarlo sin borrar el contenido.</p>
+              </div>
+              <Switch
+                id="popupEnabled"
+                checked={watch("popupEnabled")}
+                onCheckedChange={(v) => setValue("popupEnabled", v)}
+              />
+            </div>
+            <Field label="Título">
+              <Input {...register("popupTitle")} placeholder="Ej: ¡Bienvenido a DIAMONDVA.Co!" className="border-ink-border bg-ink text-bone" />
+            </Field>
+            <Field label="Mensaje">
+              <Textarea
+                {...register("popupMessage")}
+                rows={3}
+                placeholder="Ej: Registrate y llevate 5% off en tu primera compra."
+                className="border-ink-border bg-ink text-bone"
+              />
+            </Field>
+            <Field label="Imagen (opcional)" hint="URL o ruta local, ej: /promo.jpg">
+              <Input {...register("popupImageUrl")} placeholder="/promo.jpg" className="border-ink-border bg-ink text-bone" />
+              {errorMsg("popupImageUrl")}
+            </Field>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Link del botón (opcional)" hint="Ej: /tienda o /cuenta/registro">
+                <Input {...register("popupLinkUrl")} placeholder="/tienda" className="border-ink-border bg-ink text-bone" />
+              </Field>
+              <Field label="Texto del botón">
+                <Input {...register("popupButtonText")} placeholder="Ver más" className="border-ink-border bg-ink text-bone" />
               </Field>
             </div>
           </div>

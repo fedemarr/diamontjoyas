@@ -38,3 +38,27 @@ export const getOrderByPublicCode = cache(async (code: string) => {
     },
   });
 });
+
+/**
+ * "Mi cuenta" (sección nueva, cuentas de cliente): pedidos hechos estando
+ * logueado con esa `customerId`. Los pedidos como invitado (sin login) no
+ * quedan vinculados — solo se ve lo que se compró logueado.
+ */
+export async function getOrdersByCustomerId(customerId: string) {
+  return db.order.findMany({
+    where: { customerId },
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      orderNumber: true,
+      publicCode: true,
+      total: true,
+      paymentStatus: true,
+      orderStatus: true,
+      createdAt: true,
+      items: {
+        select: { id: true, productName: true, quantity: true },
+      },
+    },
+  });
+}

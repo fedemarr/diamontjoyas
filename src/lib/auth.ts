@@ -6,16 +6,24 @@ import { authConfig } from "@/lib/auth.config";
 import { db } from "@/lib/db";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { loginSchema } from "@/lib/validations/auth";
+import { customerLoginSchema } from "@/lib/validations/customer-auth";
 
 /**
- * Config completa (Node runtime): agrega el Credentials provider sobre
- * `authConfig`. `AUTH_SECRET` se lee automáticamente de env — no hace
- * falta pasarlo acá.
+ * Config completa (Node runtime): agrega los dos Credentials providers
+ * sobre `authConfig`. `AUTH_SECRET` se lee automáticamente de env — no
+ * hace falta pasarlo acá.
+ *
+ * Dos providers, un solo NextAuth: "credentials" autentica contra `User`
+ * (panel admin) y devuelve `kind: "admin"`; "customer-login" autentica
+ * contra `Customer` (cuenta de la tienda) y devuelve `kind: "customer"`.
+ * `auth.config.ts` usa ese `kind` para separar qué sesión puede entrar
+ * a `/admin` — nunca se mezclan aunque compartan el mismo JWT/cookie.
  */
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   providers: [
     Credentials({
+      id: "credentials",
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Contraseña", type: "password" },
@@ -52,6 +60,39 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           email: user.email,
           name: user.name,
           role: user.role,
+          kind: "admin",
+        };
+      },
+    }),
+    Credentials({
+      id: "customer-login",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Contraseña", type: "password" },
+      },
+      async authorize(credentials, request) {
+        const ip = getRequestIp(request);
+        const rate = checkRateLimit(`customer-login:${ip}`, 10, 10 * 60 * 1000);
+        if (!rate.success) {
+          throw new Error("Demasiados intentos. Esperá 10 minutos y volvé a intentar.");
+        }
+
+        const parsed = customerLoginSchema.safeParse(credentials);
+        if (!parsed.success) return null;
+
+        const { email, password } = parsed.data;
+
+        const customer = await db.customer.findUnique({ where: { email } });
+        if (!customer || customer.deletedAt) return null;
+
+        const passwordMatches = await bcrypt.compare(password, customer.passwordHash);
+        if (!passwordMatches) return null;
+
+        return {
+          id: customer.id,
+          email: customer.email,
+          name: customer.name,
+          kind: "customer",
         };
       },
     }),

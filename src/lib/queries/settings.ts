@@ -33,6 +33,12 @@ export interface PublicSettings {
   platedPricePerGram: number;
   customChainGramsPerCm: number;
   customChainLaborCost: number;
+  popupEnabled: boolean;
+  popupTitle: string;
+  popupMessage: string;
+  popupImageUrl: string | null;
+  popupLinkUrl: string | null;
+  popupButtonText: string;
 }
 
 const DEFAULTS: PublicSettings = {
@@ -61,6 +67,12 @@ const DEFAULTS: PublicSettings = {
   platedPricePerGram: 0,
   customChainGramsPerCm: 1.2,
   customChainLaborCost: 5000,
+  popupEnabled: false,
+  popupTitle: "",
+  popupMessage: "",
+  popupImageUrl: null,
+  popupLinkUrl: null,
+  popupButtonText: "Ver más",
 };
 
 /**

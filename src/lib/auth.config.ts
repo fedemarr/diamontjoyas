@@ -16,27 +16,32 @@ export const authConfig = {
   },
   callbacks: {
     authorized({ auth, request }) {
-      const isLoggedIn = !!auth?.user;
-      const isProtected =
+      const isAdminArea =
         request.nextUrl.pathname.startsWith("/admin") ||
         request.nextUrl.pathname.startsWith("/api/admin");
 
-      return isProtected ? isLoggedIn : true;
+      // El área admin SOLO acepta sesiones "admin" — una sesión de cliente
+      // logueado en la tienda no debe poder entrar acá aunque esté logueada.
+      if (isAdminArea) return auth?.user?.kind === "admin";
+
+      // `/cuenta` (excepto login/registro) se protege a nivel de página,
+      // no acá — así conviven los dos `pages.signIn` sin pelearse.
+      return true;
     },
     jwt({ token, user }) {
       // `user` solo viene definido en el sign-in inicial (lo devuelve
       // `authorize()` en lib/auth.ts, siempre con `id`) — en refrescos
       // posteriores del JWT viene `undefined` y el token conserva lo ya guardado.
+      // `user` es la unión discriminada por `kind` — se copia entero (no
+      // campo por campo) para que TS la angoste bien en ambos lados.
       if (user?.id) {
-        token.id = user.id;
-        token.role = user.role;
+        Object.assign(token, user);
       }
       return token;
     },
     session({ session, token }) {
       if (session.user) {
-        session.user.id = token.id;
-        session.user.role = token.role;
+        Object.assign(session.user, token);
       }
       return session;
     },

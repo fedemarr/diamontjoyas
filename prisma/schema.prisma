@@ -10,7 +10,7 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL") // pooled (PgBouncer, puerto 6543, ?pgbouncer=true) — runtime
-  directUrl = env("DIRECT_URL")   // directa (puerto 5432) — usada por Prisma Migrate
+  directUrl = env("DIRECT_URL") // directa (puerto 5432) — usada por Prisma Migrate
 }
 
 // ── ENUMS ────────────────────────────────────────────────────────────────
@@ -209,6 +209,24 @@ model ProductVariant {
   @@index([productId])
 }
 
+/// Cuenta de cliente de la tienda (storefront) — totalmente separada de
+/// `User` (panel admin). Un cliente logueado que compra sin usar cupón
+/// recibe 5% de descuento automático (ver `Order.memberDiscountApplied`).
+model Customer {
+  id           String    @id @default(uuid()) @db.Uuid
+  email        String    @unique
+  passwordHash String
+  name         String
+  phone        String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  orders Order[]
+
+  @@index([deletedAt])
+}
+
 // ── PEDIDOS ──────────────────────────────────────────────────────────────
 
 model Order {
@@ -225,9 +243,16 @@ model Order {
   customerPhone String
   customerDni   String?
 
+  // Cuenta de cliente opcional (checkout sigue funcionando como invitado
+  // sin loguearse). Si está logueado y no usó cupón, se aplica el 5% de
+  // socio automático — ver `memberDiscountApplied`.
+  customerId            String?   @db.Uuid
+  customer              Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  memberDiscountApplied Boolean   @default(false)
+
   shippingMethod  ShippingMethod
   shippingAddress Json? // { street, number, floor?, city, province, postalCode, notes? }
-  shippingCost    Decimal @db.Decimal(12, 2)
+  shippingCost    Decimal        @db.Decimal(12, 2)
 
   subtotal Decimal @db.Decimal(12, 2)
   discount Decimal @default(0) @db.Decimal(12, 2)

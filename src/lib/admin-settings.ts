@@ -38,6 +38,12 @@ const DEFAULTS: SettingsState = {
   platedPricePerGram: 0,
   customChainGramsPerCm: 1.2,
   customChainLaborCost: 5000,
+  popupEnabled: false,
+  popupTitle: "",
+  popupMessage: "",
+  popupImageUrl: null,
+  popupLinkUrl: null,
+  popupButtonText: "Ver más",
 };
 
 export async function getSettingsState(): Promise<SettingsState> {
