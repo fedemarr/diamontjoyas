@@ -1,9 +1,10 @@
 "use client";
 
-import { MessageCircle, Link as LinkIcon } from "lucide-react";
+import { MessageCircle, Link as LinkIcon, Gem } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -44,6 +45,8 @@ export function CustomChainSection({
   const [thickness, setThickness] = useState<ChainThickness>("MEDIANA");
   const [description, setDescription] = useState("");
   const [name, setName] = useState("");
+  const [wantsPendant, setWantsPendant] = useState(false);
+  const [pendantName, setPendantName] = useState("");
 
   const estimate = useMemo(() => {
     if (!material || !length) return 0;
@@ -66,6 +69,9 @@ export function CustomChainSection({
       length ? `Largo aproximado: ${length}cm` : "",
       material && length ? `Grosor: ${THICKNESS_LABELS[thickness]}` : "",
       estimate > 0 ? `Estimado orientativo: desde ${formatARS(estimate)} (a confirmar)` : "",
+      wantsPendant
+        ? `Dije personalizado: sí, plata 925, grabado "${pendantName || "(sin especificar)"}" — precio a cotizar aparte`
+        : "",
       description ? `Descripción: ${description}` : "",
     ].filter(Boolean);
 
@@ -184,6 +190,34 @@ export function CustomChainSection({
               </p>
             </div>
           )}
+
+          <div className="sm:col-span-2 flex flex-col gap-3 rounded-md border border-ink-border bg-ink-soft p-4">
+            <label className="flex items-center gap-2 text-sm font-medium text-bone">
+              <Checkbox checked={wantsPendant} onCheckedChange={(v) => setWantsPendant(v === true)} />
+              <Gem className="size-4 text-gold" strokeWidth={1.5} />
+              Sumar un dije personalizado con nombre (plata 925)
+            </label>
+
+            {wantsPendant && (
+              <div>
+                <label htmlFor="pendant-name" className="mb-1 block text-xs font-medium text-silver">
+                  Nombre a grabar en el dije
+                </label>
+                <Input
+                  id="pendant-name"
+                  value={pendantName}
+                  onChange={(e) => setPendantName(e.target.value)}
+                  maxLength={15}
+                  placeholder="Ej: Sofía"
+                  className="border-ink-border bg-ink text-bone placeholder:text-silver/60 focus-visible:border-gold focus-visible:ring-gold/40"
+                />
+                <p className="mt-1 text-xs text-silver/60">
+                  El dije es plata 925. El precio se cotiza aparte según el diseño, te lo confirmamos por
+                  WhatsApp.
+                </p>
+              </div>
+            )}
+          </div>
 
           <div className="sm:col-span-2">
             <label htmlFor="chain-desc" className="mb-1 block text-xs font-medium text-silver">
