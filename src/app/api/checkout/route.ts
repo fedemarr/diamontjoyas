@@ -123,9 +123,20 @@ export async function POST(request: NextRequest) {
       const session = await auth();
       if (session?.user?.kind === "customer") {
         customerId = session.user.id;
-        discount = subtotal.times(MEMBER_DISCOUNT_PERCENT).dividedBy(100);
+        discount = discount.plus(subtotal.times(MEMBER_DISCOUNT_PERCENT).dividedBy(100));
         memberDiscountApplied = true;
       }
+    }
+
+    // 2.2) Descuento por transferencia/efectivo — evita la comisión de
+    // Mercado Pago, así que se suma aparte (no depende de cupón ni de
+    // estar logueado, son ejes distintos). `settings.transferDiscountPercent`
+    // se usa para los dos medios de pago, no solo transferencia.
+    if (
+      (data.paymentMethod === "TRANSFERENCIA" || data.paymentMethod === "EFECTIVO") &&
+      settings.transferDiscountPercent > 0
+    ) {
+      discount = discount.plus(subtotal.times(settings.transferDiscountPercent).dividedBy(100));
     }
 
     // 3) Envío

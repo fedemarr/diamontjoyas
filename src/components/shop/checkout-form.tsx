@@ -93,12 +93,19 @@ export function CheckoutForm({
   }, [shippingMethod, setValue]);
 
   const subtotal = cartSubtotal(items);
-  // El 5% de socio y el cupón nunca se combinan — el server aplica la misma
-  // regla en /api/checkout (fuente de verdad), esto es solo para mostrar
-  // el total correcto antes de confirmar.
+  // El 5% de socio y el cupón nunca se combinan; el descuento por
+  // transferencia/efectivo es un eje aparte y sí se suma. El server aplica
+  // la misma regla en /api/checkout (fuente de verdad), esto es solo para
+  // mostrar el total correcto antes de confirmar.
   const memberDiscountApplies = isCustomerLoggedIn && !coupon;
   const memberDiscount = memberDiscountApplies ? subtotal * (MEMBER_DISCOUNT_PERCENT / 100) : 0;
-  const discount = couponDiscount(coupon, subtotal) + memberDiscount;
+  const paymentDiscountApplies =
+    (paymentMethod === "TRANSFERENCIA" || paymentMethod === "EFECTIVO") &&
+    settings.transferDiscountPercent > 0;
+  const paymentDiscount = paymentDiscountApplies
+    ? subtotal * (settings.transferDiscountPercent / 100)
+    : 0;
+  const discount = couponDiscount(coupon, subtotal) + memberDiscount + paymentDiscount;
   const shippingCost = useMemo(
     () => calculateShippingCost(shippingMethod, province ?? null, settings.shippingRates),
     [shippingMethod, province, settings.shippingRates]
@@ -370,6 +377,14 @@ export function CheckoutForm({
               ) : (
                 <p>Te vamos a enviar los datos para transferir apenas confirmes el pedido.</p>
               )}
+            </div>
+          )}
+
+          {paymentMethod === "EFECTIVO" && settings.transferDiscountPercent > 0 && (
+            <div className="rounded-md border border-ink-border bg-ink p-4 text-sm text-silver">
+              <p className="text-success">
+                {settings.transferDiscountPercent}% de descuento pagando en efectivo.
+              </p>
             </div>
           )}
 
