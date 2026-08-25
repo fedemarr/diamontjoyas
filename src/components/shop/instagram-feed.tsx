@@ -7,7 +7,7 @@ import Link from "next/link";
  * tiles fijos que linkean al perfil. El día que haya fotos reales del
  * cliente, se reemplazan estos placeholders por capturas de posts.
  */
-const TILE_URL = "https://placehold.co/400x400/141416/8C6D1F.png?text=%40diamondva.co";
+const TILE_URL = "/logo.png";
 const TILES = Array.from({ length: 6 }, () => TILE_URL);
 
 export function InstagramFeed({
@@ -47,7 +47,7 @@ export function InstagramFeed({
               alt={`Publicación de ${handle} en Instagram`}
               fill
               sizes="200px"
-              className="object-cover opacity-80 transition-opacity group-hover:opacity-100"
+              className="object-contain p-6 opacity-80 transition-opacity group-hover:opacity-100 sm:p-8"
             />
           </Link>
         ))}
