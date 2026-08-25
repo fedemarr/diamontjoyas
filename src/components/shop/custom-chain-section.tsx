@@ -33,6 +33,9 @@ const materialOptions: { value: Material; label: string }[] = [
 
 const thicknessOptions: ChainThickness[] = ["FINA", "MEDIANA", "GRUESA"];
 
+/** Cadena + dije con nombre: solo viene en plata 925, largo fijo (no libre). */
+const pendantChainLengths = ["50", "55"] as const;
+
 export function CustomChainSection({
   priceSettings,
   whatsapp,
@@ -47,6 +50,7 @@ export function CustomChainSection({
   const [name, setName] = useState("");
   const [wantsPendant, setWantsPendant] = useState(false);
   const [pendantName, setPendantName] = useState("");
+  const [pendantChainLength, setPendantChainLength] = useState<(typeof pendantChainLengths)[number]>("50");
 
   const estimate = useMemo(() => {
     if (!material || !length) return 0;
@@ -70,7 +74,7 @@ export function CustomChainSection({
       material && length ? `Grosor: ${THICKNESS_LABELS[thickness]}` : "",
       estimate > 0 ? `Estimado orientativo: desde ${formatARS(estimate)} (a confirmar)` : "",
       wantsPendant
-        ? `Dije personalizado: sí, plata 925, grabado "${pendantName || "(sin especificar)"}" — precio a cotizar aparte`
+        ? `Dije personalizado: sí, plata 925, grabado "${pendantName || "(sin especificar)"}", cadena de ${pendantChainLength}cm — precio a cotizar aparte`
         : "",
       description ? `Descripción: ${description}` : "",
     ].filter(Boolean);
@@ -199,21 +203,48 @@ export function CustomChainSection({
             </label>
 
             {wantsPendant && (
-              <div>
-                <label htmlFor="pendant-name" className="mb-1 block text-xs font-medium text-silver">
-                  Nombre a grabar en el dije
-                </label>
-                <Input
-                  id="pendant-name"
-                  value={pendantName}
-                  onChange={(e) => setPendantName(e.target.value)}
-                  maxLength={15}
-                  placeholder="Ej: Sofía"
-                  className="border-ink-border bg-ink text-bone placeholder:text-silver/60 focus-visible:border-gold focus-visible:ring-gold/40"
-                />
-                <p className="mt-1 text-xs text-silver/60">
-                  El dije es plata 925. El precio se cotiza aparte según el diseño, te lo confirmamos por
-                  WhatsApp.
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="sm:col-span-2">
+                  <label htmlFor="pendant-name" className="mb-1 block text-xs font-medium text-silver">
+                    Nombre a grabar en el dije
+                  </label>
+                  <Input
+                    id="pendant-name"
+                    value={pendantName}
+                    onChange={(e) => setPendantName(e.target.value)}
+                    maxLength={15}
+                    placeholder="Ej: Sofía"
+                    className="border-ink-border bg-ink text-bone placeholder:text-silver/60 focus-visible:border-gold focus-visible:ring-gold/40"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label htmlFor="pendant-chain-length" className="mb-1 block text-xs font-medium text-silver">
+                    Largo de la cadena
+                  </label>
+                  <Select
+                    value={pendantChainLength}
+                    onValueChange={(v) => setPendantChainLength(v as (typeof pendantChainLengths)[number])}
+                  >
+                    <SelectTrigger
+                      id="pendant-chain-length"
+                      className="border-ink-border bg-ink text-bone focus:border-gold focus:ring-gold/40"
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="border-ink-border bg-ink text-bone">
+                      {pendantChainLengths.map((l) => (
+                        <SelectItem key={l} value={l}>
+                          {l}cm
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <p className="text-xs text-silver/60 sm:col-span-2">
+                  La cadena con dije con nombre viene en plata 925, 50cm o 55cm. El precio se cotiza
+                  aparte según el diseño, te lo confirmamos por WhatsApp.
                 </p>
               </div>
             )}
