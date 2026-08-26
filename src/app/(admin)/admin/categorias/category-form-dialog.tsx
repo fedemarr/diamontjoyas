@@ -2,7 +2,8 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { ImagePlus, Loader2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { categoriesApi } from "@/lib/admin-api";
+import { categoriesApi, uploadImageToCloudinary } from "@/lib/admin-api";
 import { slugify } from "@/lib/utils";
 import { categorySchema, type CategoryInput } from "@/lib/validations/category";
 import type { AdminCategory } from "@/types/admin";
@@ -87,6 +88,23 @@ export function CategoryFormDialog({
 
   const name = watch("name");
   const isActive = watch("isActive");
+  const imageUrl = watch("imageUrl");
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  async function handleUpload(file: File) {
+    setUploadError(null);
+    setUploading(true);
+    try {
+      const { url } = await uploadImageToCloudinary(file);
+      setValue("imageUrl", url, { shouldValidate: true });
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Error subiendo la imagen");
+    } finally {
+      setUploading(false);
+    }
+  }
 
   const mutation = useMutation({
     mutationFn: (data: CategoryInput) =>
@@ -145,16 +163,36 @@ export function CategoryFormDialog({
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="cat-image">
-              URL de imagen{" "}
-              <span className="font-normal text-silver">— se sube desde el uploader más adelante</span>
-            </Label>
-            <Input
-              id="cat-image"
-              {...register("imageUrl")}
-              placeholder="https://..."
-              className="border-ink-border bg-ink text-bone"
-            />
+            <Label>Imagen</Label>
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => inputRef.current?.click()}
+              onKeyDown={(e) => e.key === "Enter" && inputRef.current?.click()}
+              className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-ink-border bg-ink px-4 py-6 text-center transition-colors hover:border-gold/50"
+            >
+              {imageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element -- imagen de categoria, no requiere next/image
+                <img
+                  src={imageUrl}
+                  alt="Vista previa de la categoría"
+                  className="max-h-32 w-full rounded-md object-cover"
+                />
+              ) : uploading ? (
+                <Loader2 className="size-6 animate-spin text-gold" />
+              ) : (
+                <ImagePlus className="size-6 text-silver" />
+              )}
+              <p className="text-sm text-silver">{uploading ? "Subiendo..." : "Subí una imagen"}</p>
+              <input
+                ref={inputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => e.target.files?.[0] && handleUpload(e.target.files[0])}
+              />
+            </div>
+            {uploadError && <p className="text-sm text-danger">{uploadError}</p>}
             {errors.imageUrl && <p className="text-xs text-danger">{errors.imageUrl.message}</p>}
           </div>
 
