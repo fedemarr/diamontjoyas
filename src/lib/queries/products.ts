@@ -24,6 +24,7 @@ const PUBLIC_PRODUCT_SELECT = {
   weightGrams: true,
   laborCost: true,
   compareAtPrice: true,
+  installments3xTotal: true,
   stock: true,
   lowStockAlert: true,
   trackStock: true,

@@ -78,6 +78,7 @@ export async function GET(request: NextRequest) {
         weightGrams: decimalToNumber(p.weightGrams),
         laborCost: decimalToNumber(p.laborCost),
         compareAtPrice: decimalToNumber(p.compareAtPrice),
+        installments3xTotal: decimalToNumber(p.installments3xTotal),
         cost: decimalToNumber(p.cost),
         currentPrice,
       };
@@ -116,6 +117,7 @@ export async function POST(request: NextRequest) {
         weightGrams: data.pricingMode === "BY_WEIGHT" ? data.weightGrams : null,
         laborCost: data.pricingMode === "BY_WEIGHT" ? (data.laborCost ?? 0) : null,
         compareAtPrice: data.compareAtPrice ?? null,
+        installments3xTotal: data.installments3xTotal ?? null,
         cost: data.cost ?? null,
         stock: data.stock,
         lowStockAlert: data.lowStockAlert,

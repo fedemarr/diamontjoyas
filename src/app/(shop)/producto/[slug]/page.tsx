@@ -143,10 +143,19 @@ export default async function ProductoPage({
               {settings.transferDiscountPercent}% off)
             </p>
           )}
-          {settings.installmentsEnabled && (
+          {product.installments3xTotal != null ? (
             <p className="text-sm text-silver">
-              Hasta {settings.installmentsCount} cuotas con Mercado Pago
+              3 cuotas sin interés de{" "}
+              <span className="font-medium text-bone">
+                {formatARS(product.installments3xTotal.toNumber() / 3)}
+              </span>
             </p>
+          ) : (
+            settings.installmentsEnabled && (
+              <p className="text-sm text-silver">
+                Hasta {settings.installmentsCount} cuotas con Mercado Pago
+              </p>
+            )
           )}
 
           <ProductInfoAccordion

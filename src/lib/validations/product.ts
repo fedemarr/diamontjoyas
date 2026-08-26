@@ -48,6 +48,7 @@ export const productSchema = z
     weightGrams: z.number().positive("Tiene que ser mayor a 0").optional().nullable(),
     laborCost: z.number().min(0).optional().nullable(),
     compareAtPrice: z.number().positive().optional().nullable(),
+    installments3xTotal: z.number().positive().optional().nullable(),
     cost: z.number().min(0).optional().nullable(),
     // Sin .default() en los campos de abajo: el form siempre los manda
     // vía defaultValues de RHF — con .default() acá, zodResolver infiere

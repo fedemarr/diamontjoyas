@@ -42,6 +42,7 @@ function emptyDefaults(): ProductInput {
     weightGrams: null,
     laborCost: null,
     compareAtPrice: null,
+    installments3xTotal: null,
     cost: null,
     stock: 0,
     lowStockAlert: 3,
@@ -69,6 +70,7 @@ function fromProduct(product: AdminProduct): ProductInput {
     weightGrams: product.weightGrams,
     laborCost: product.laborCost,
     compareAtPrice: product.compareAtPrice,
+    installments3xTotal: product.installments3xTotal,
     cost: product.cost,
     stock: product.stock,
     lowStockAlert: product.lowStockAlert,
@@ -322,6 +324,25 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
               value={values.compareAtPrice ?? ""}
               onChange={(e) =>
                 setValue("compareAtPrice", e.target.value === "" ? null : Number(e.target.value))
+              }
+              className="border-ink-border bg-ink text-bone"
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label>
+              Total en 3 cuotas sin interés{" "}
+              <span className="font-normal text-silver">
+                — opcional, se muestra dividido por 3 en la ficha
+              </span>
+            </Label>
+            <Input
+              type="number"
+              value={values.installments3xTotal ?? ""}
+              onChange={(e) =>
+                setValue(
+                  "installments3xTotal",
+                  e.target.value === "" ? null : Number(e.target.value)
+                )
               }
               className="border-ink-border bg-ink text-bone"
             />

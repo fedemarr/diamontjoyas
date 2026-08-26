@@ -52,6 +52,7 @@ export interface AdminProduct {
   weightGrams: number | null;
   laborCost: number | null;
   compareAtPrice: number | null;
+  installments3xTotal: number | null;
   cost: number | null;
   stock: number;
   lowStockAlert: number;

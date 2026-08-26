@@ -54,6 +54,7 @@ export async function PATCH(
           weightGrams: data.pricingMode === "BY_WEIGHT" ? data.weightGrams : null,
           laborCost: data.pricingMode === "BY_WEIGHT" ? (data.laborCost ?? 0) : null,
           compareAtPrice: data.compareAtPrice ?? null,
+          installments3xTotal: data.installments3xTotal ?? null,
           cost: data.cost ?? null,
           stock: data.stock,
           lowStockAlert: data.lowStockAlert,

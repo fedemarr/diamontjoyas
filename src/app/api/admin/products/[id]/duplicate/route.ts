@@ -35,6 +35,7 @@ export async function POST(
         weightGrams: original.weightGrams,
         laborCost: original.laborCost,
         compareAtPrice: original.compareAtPrice,
+        installments3xTotal: original.installments3xTotal,
         cost: original.cost,
         stock: 0,
         lowStockAlert: original.lowStockAlert,

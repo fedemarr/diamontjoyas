@@ -43,6 +43,7 @@ export function serializeProduct(product: ProductWithRelations) {
     weightGrams: decimalToNumber(product.weightGrams),
     laborCost: decimalToNumber(product.laborCost),
     compareAtPrice: decimalToNumber(product.compareAtPrice),
+    installments3xTotal: decimalToNumber(product.installments3xTotal),
     cost: decimalToNumber(product.cost),
     variants: product.variants.map((v) => ({
       ...v,

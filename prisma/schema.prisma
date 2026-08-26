@@ -151,6 +151,12 @@ model Product {
   compareAtPrice Decimal? @db.Decimal(12, 2) // tachado, solo liquidación
   cost           Decimal? @db.Decimal(12, 2) // costo interno — NUNCA exponer al público
 
+  // Total pagando en 3 cuotas sin interés (recargo que absorbe el vendedor
+  // por la comisión de Mercado Pago). Si está cargado, la ficha/grilla
+  // muestra "en 3 cuotas de $X sin interés" (installments3xTotal / 3) además
+  // del precio de contado normal. Null = no se muestra nada de cuotas.
+  installments3xTotal Decimal? @db.Decimal(12, 2)
+
   stock         Int     @default(0)
   lowStockAlert Int     @default(3)
   trackStock    Boolean @default(true)

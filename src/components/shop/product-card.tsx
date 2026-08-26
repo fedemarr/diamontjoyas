@@ -53,13 +53,23 @@ export function ProductCard({ product }: { product: PublicProductWithPrice }) {
           {MATERIAL_LABELS[product.material] ?? product.material}
         </span>
         <h3 className="line-clamp-2 text-sm font-medium text-bone">{product.name}</h3>
-        <div className="mt-auto flex items-baseline gap-2 pt-1">
-          <span className="font-display text-lg font-semibold text-gold-light">
-            {formatARS(product.currentPrice)}
-          </span>
-          {product.compareAtPrice && (
-            <span className="text-xs text-silver line-through">
-              {formatARS(product.compareAtPrice.toNumber())}
+        <div className="mt-auto flex flex-col gap-0.5 pt-1">
+          <div className="flex items-baseline gap-2">
+            <span className="font-display text-lg font-semibold text-gold-light">
+              {formatARS(product.currentPrice)}
+            </span>
+            {product.compareAtPrice && (
+              <span className="text-xs text-silver line-through">
+                {formatARS(product.compareAtPrice.toNumber())}
+              </span>
+            )}
+          </div>
+          {product.installments3xTotal && (
+            <span className="text-xs text-silver">
+              3 cuotas sin interés de{" "}
+              <span className="font-medium text-bone">
+                {formatARS(product.installments3xTotal.toNumber() / 3)}
+              </span>
             </span>
           )}
         </div>
