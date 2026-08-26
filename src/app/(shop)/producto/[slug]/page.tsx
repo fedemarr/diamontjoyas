@@ -117,6 +117,15 @@ export default async function ProductoPage({
             )}
           </div>
 
+          {product.installments3xTotal != null && (
+            <p className="text-sm text-silver">
+              3 cuotas sin interés de{" "}
+              <span className="font-medium text-bone">
+                {formatARS(product.installments3xTotal.toNumber() / 3)}
+              </span>
+            </p>
+          )}
+
           <PurchasePanel
             productId={product.id}
             slug={product.slug}
@@ -137,25 +146,20 @@ export default async function ProductoPage({
             whatsappUrl={whatsappUrl}
           />
 
-          {transferPrice != null && (
-            <p className="text-sm text-success">
-              {formatARS(transferPrice)} pagando por transferencia (
-              {settings.transferDiscountPercent}% off)
-            </p>
-          )}
           {product.installments3xTotal != null ? (
-            <p className="text-sm text-silver">
-              3 cuotas sin interés de{" "}
-              <span className="font-medium text-bone">
-                {formatARS(product.installments3xTotal.toNumber() / 3)}
-              </span>
-            </p>
+            <p className="-mt-4 text-sm font-medium text-success">efectivo / transferencia</p>
           ) : (
-            settings.installmentsEnabled && (
-              <p className="text-sm text-silver">
-                Hasta {settings.installmentsCount} cuotas con Mercado Pago
+            transferPrice != null && (
+              <p className="text-sm text-success">
+                {formatARS(transferPrice)} pagando por transferencia (
+                {settings.transferDiscountPercent}% off)
               </p>
             )
+          )}
+          {product.installments3xTotal == null && settings.installmentsEnabled && (
+            <p className="text-sm text-silver">
+              Hasta {settings.installmentsCount} cuotas con Mercado Pago
+            </p>
           )}
 
           <ProductInfoAccordion
