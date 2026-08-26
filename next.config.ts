@@ -27,7 +27,7 @@ const nextConfig: NextConfig = {
               "img-src 'self' data: blob: https://res.cloudinary.com https://placehold.co",
               "font-src 'self' data:",
               "frame-src https://www.mercadopago.com https://www.mercadopago.com.ar https://*.mercadopago.com",
-              "connect-src 'self' https://api.mercadopago.com https://*.mercadopago.com",
+              "connect-src 'self' https://api.mercadopago.com https://*.mercadopago.com https://api.cloudinary.com",
               "base-uri 'self'",
               "form-action 'self'",
               "frame-ancestors 'none'",
