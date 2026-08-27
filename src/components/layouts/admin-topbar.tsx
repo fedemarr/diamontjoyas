@@ -1,5 +1,6 @@
 import { Search } from "lucide-react";
 
+import { AdminMobileNav } from "@/components/layouts/admin-mobile-nav";
 import { LogoutButton } from "@/components/auth/logout-button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -15,7 +16,8 @@ export function AdminTopbar({
   user: { name?: string | null; email?: string | null; role: string };
 }) {
   return (
-    <header className="flex h-16 shrink-0 items-center gap-4 border-b border-ink-border bg-ink px-6">
+    <header className="flex h-16 shrink-0 items-center gap-4 border-b border-ink-border bg-ink px-4 md:px-6">
+      <AdminMobileNav />
       <div className="relative hidden max-w-sm flex-1 md:block">
         <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-silver" />
         {/* TODO(Fase 4+): buscador global de productos/pedidos/clientes */}

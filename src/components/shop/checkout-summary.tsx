@@ -31,8 +31,8 @@ export function CheckoutSummary({
                 {item.quantity}
               </span>
             </div>
-            <div className="flex flex-1 flex-col text-xs">
-              <span className="text-bone">{item.name}</span>
+            <div className="flex min-w-0 flex-1 flex-col text-xs">
+              <span className="break-words text-bone">{item.name}</span>
               {item.variantName && <span className="text-silver">{item.variantName}</span>}
               <span className="text-silver">{formatARS(item.unitPrice * item.quantity)}</span>
             </div>

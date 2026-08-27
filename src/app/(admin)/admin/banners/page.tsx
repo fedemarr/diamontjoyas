@@ -53,7 +53,7 @@ export default function BannersPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex w-fit gap-1 rounded-lg border border-ink-border bg-ink-soft p-1">
+      <div className="flex w-fit flex-wrap gap-1 rounded-lg border border-ink-border bg-ink-soft p-1">
         <TabButton active={tab === "banners"} onClick={() => setTab("banners")}>
           <ImageIcon className="size-4" />
           Banners del home

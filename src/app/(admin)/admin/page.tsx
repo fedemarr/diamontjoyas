@@ -154,7 +154,7 @@ export default function DashboardPage() {
               <li key={o.id}>
                 <Link
                   href={`/admin/pedidos/${o.id}`}
-                  className="flex items-center gap-3 py-2.5 transition-colors hover:bg-ink-border/40"
+                  className="flex flex-wrap items-center gap-3 py-2.5 transition-colors hover:bg-ink-border/40"
                 >
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm text-bone">

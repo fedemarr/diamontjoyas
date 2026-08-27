@@ -34,7 +34,7 @@ export function AnnouncementBar({ announcements }: { announcements: HeaderAnnoun
 
   return (
     <div className="bg-ink-soft border-b border-ink-border text-bone">
-      <div className="mx-auto flex h-9 max-w-7xl items-center justify-center overflow-hidden px-4 text-center">
+      <div className="mx-auto flex min-h-9 max-w-7xl items-center justify-center px-4 py-2 text-center">
         {current.linkUrl ? (
           <Link href={current.linkUrl} className="hover:text-gold">
             {content}

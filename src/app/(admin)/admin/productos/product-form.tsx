@@ -237,7 +237,7 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
           </Select>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button
             type="button"
             variant={values.pricingMode === "FIXED" ? "default" : "outline"}

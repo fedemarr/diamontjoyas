@@ -19,7 +19,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   return (
     <QueryProvider>
       <div className="flex h-screen bg-ink text-bone print:block print:h-auto print:overflow-visible">
-        <div className="print:hidden">
+        <div className="hidden lg:block print:hidden">
           <AdminSidebar />
         </div>
         <div className="flex flex-1 flex-col overflow-hidden print:block print:overflow-visible">

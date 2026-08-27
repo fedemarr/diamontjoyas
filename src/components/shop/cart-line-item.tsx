@@ -22,7 +22,7 @@ export function CartLineItem({ item }: { item: CartItem }) {
         )}
       </Link>
 
-      <div className="flex flex-1 flex-col gap-1">
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
         <Link
           href={`/producto/${item.slug}`}
           className="text-sm font-medium text-bone hover:text-gold"

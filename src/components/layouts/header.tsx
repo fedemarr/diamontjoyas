@@ -121,7 +121,7 @@ export function Header({
               alt="DIAMONDVA.Co"
               width={180}
               height={60}
-              className="h-14 w-auto object-contain md:h-16"
+              className="h-11 w-auto object-contain sm:h-14 md:h-16"
               priority
             />
           </Link>

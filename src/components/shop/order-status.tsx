@@ -41,7 +41,7 @@ export function OrderTimeline({ orderStatus }: { orderStatus: string }) {
   const currentIndex = ORDER_STEPS.findIndex((s) => s.key === orderStatus);
 
   return (
-    <div className="flex items-center">
+    <div className="scrollbar-none flex min-w-0 items-center overflow-x-auto">
       {ORDER_STEPS.map((step, i) => {
         const reached = i <= currentIndex;
         return (

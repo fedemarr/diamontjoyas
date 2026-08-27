@@ -54,8 +54,8 @@ export default async function SeguimientoPage({
 
         <div className="flex flex-col divide-y divide-ink-border">
           {order.items.map((item) => (
-            <div key={item.id} className="flex justify-between py-2 text-sm">
-              <span className="text-bone">
+            <div key={item.id} className="flex justify-between gap-4 py-2 text-sm">
+              <span className="min-w-0 break-words text-bone">
                 {item.quantity}× {item.productName}
               </span>
               <span className="text-silver">{formatARS(item.subtotal.toNumber())}</span>

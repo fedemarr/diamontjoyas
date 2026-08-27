@@ -29,7 +29,7 @@ export function CatalogPagination({
   }
 
   return (
-    <div className="mt-10 flex items-center justify-center gap-3">
+    <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
       <Button
         asChild={page > 1}
         disabled={page <= 1}
