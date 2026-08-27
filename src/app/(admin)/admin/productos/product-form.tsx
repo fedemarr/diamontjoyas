@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Decimal from "decimal.js";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 
@@ -89,6 +89,7 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const isEditing = !!product;
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const { data: categoriesData } = useQuery({
     queryKey: ["categories"],
@@ -157,9 +158,26 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
 
   return (
     <form
-      onSubmit={handleSubmit((data) => mutation.mutate(data))}
+      onSubmit={handleSubmit(
+        (data) => {
+          setSubmitError(null);
+          mutation.mutate(data);
+        },
+        () => {
+          // Fallback genérico si algo no pasa la validación y no tiene su
+          // propio mensaje visible (ej: alt de imagen) — sin esto el submit
+          // no hace nada y parece que "no guarda".
+          setSubmitError("Revisá los campos marcados en rojo antes de guardar.");
+        }
+      )}
       className="flex flex-col gap-8 pb-16"
     >
+      {submitError && (
+        <p role="alert" className="rounded-md border border-danger/40 bg-danger/10 px-4 py-3 text-sm text-danger">
+          {submitError}
+        </p>
+      )}
+
       {/* Datos básicos */}
       <section className="grid gap-4 rounded-lg border border-ink-border bg-ink-soft p-5 sm:grid-cols-2">
         <h2 className="col-span-full font-display text-lg font-semibold text-bone">
@@ -410,7 +428,11 @@ export function ProductForm({ product }: { product?: AdminProduct }) {
       {/* Imágenes */}
       <section className="flex flex-col gap-4 rounded-lg border border-ink-border bg-ink-soft p-5">
         <h2 className="font-display text-lg font-semibold text-bone">Imágenes</h2>
-        <ImageUploader images={values.images} onChange={(images) => setValue("images", images)} />
+        <ImageUploader
+          images={values.images}
+          onChange={(images) => setValue("images", images)}
+          defaultAlt={values.name}
+        />
         {errors.images && (
           <p className="text-xs text-danger">Revisá que todas las imágenes tengan texto alternativo.</p>
         )}

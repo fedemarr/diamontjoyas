@@ -26,9 +26,17 @@ import type { AdminProductImage } from "@/types/admin";
 export function ImageUploader({
   images,
   onChange,
+  defaultAlt,
 }: {
   images: AdminProductImage[];
   onChange: (images: AdminProductImage[]) => void;
+  /**
+   * Texto alternativo con el que arranca cada foto nueva (el campo es
+   * obligatorio para guardar — sección 5 del prompt maestro, accesibilidad/
+   * SEO — pero pedírselo a mano en cada subida es fricción innecesaria).
+   * Sigue siendo editable en el input de cada tile.
+   */
+  defaultAlt?: string;
 }) {
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -53,7 +61,7 @@ export function ImageUploader({
         uploaded.push({
           id: "",
           url,
-          alt: "",
+          alt: defaultAlt?.trim() || "Foto de producto",
           order: 0,
           isPrimary: false,
         });
