@@ -152,6 +152,19 @@ export function Footer({
           ))}
         </ul>
       </div>
+
+      <Separator className="bg-ink-border" />
+
+      <div className="mx-auto flex max-w-7xl items-center justify-center px-4 py-4">
+        <a
+          href="https://www.instagram.com/fmcode.agency/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs text-silver/70 transition-colors hover:text-gold"
+        >
+          Powered by fmcode.agency
+        </a>
+      </div>
     </footer>
   );
 }
